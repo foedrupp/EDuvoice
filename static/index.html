@@ -1,33 +1,2106 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EduVoice | Faculty of Education</title><style>
-:root{font-family:system-ui,'Noto Sans Khmer',sans-serif;color:#17304a;background:#f2f6fa}*{box-sizing:border-box}body{margin:0}header{background:#12365d;color:white;padding:18px max(18px,calc((100vw - 1000px)/2))}header strong{font-size:24px}header small{display:block;opacity:.85}main{max-width:1000px;margin:24px auto;padding:0 16px}.panel{background:white;border:1px solid #dce6ef;border-radius:16px;padding:24px;margin:16px 0;box-shadow:0 4px 18px #0b355010}.hidden{display:none!important}h1{font-size:28px;margin:0 0 10px}h2{margin:0 0 16px}label{display:block;font-weight:650;margin:16px 0 7px}input,textarea,select{font:inherit;width:100%;border:1px solid #c7d5e3;border-radius:9px;padding:12px;background:white}textarea{min-height:90px}button,.btn{background:#1267a5;border:0;color:white;border-radius:10px;padding:12px 18px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;margin:5px 5px 5px 0}button.secondary,.btn.secondary{background:#e9f0f7;color:#17304a}button:disabled{opacity:.5}nav{display:flex;flex-wrap:wrap;gap:7px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.muted{color:#657c8d}.choice{display:block;border:1px solid #cbd8e4;padding:13px;border-radius:10px;margin:10px 0;cursor:pointer}.choice input{width:auto;margin-right:8px}.bar{height:22px;background:#e6eef4;border-radius:7px;overflow:hidden}.fill{height:100%;background:#1a85b5;transition:width .3s}.result{margin:20px 0}.resulthead{display:flex;justify-content:space-between;margin-bottom:7px}#qr{width:190px;max-width:100%}.error{color:#b02235}.success{color:#167349}.big{font-size:clamp(25px,4vw,46px)}.projector{max-width:none;margin:0;padding:35px 5vw}.projector .panel{box-shadow:none}.projector .result{margin:30px 0}.projector .bar{height:38px}.projector .resulthead{font-size:24px}@media(max-width:650px){.grid{grid-template-columns:1fr}.panel{padding:18px}}
-@media(max-width:650px){body{font-size:16px}header{padding:14px 18px}header strong{font-size:22px}main{margin:10px auto;padding:0 10px}.panel{padding:18px 15px;border-radius:14px;margin:12px 0}h1{font-size:24px}button,.btn{min-height:48px;max-width:100%;touch-action:manipulation}.choice{min-height:58px;display:flex;align-items:center;gap:10px;font-size:17px}.choice input{width:22px;height:22px;flex-shrink:0}input,textarea,select{font-size:16px;min-height:48px}#student #submitbtn{width:100%;margin:16px 0}.projector{padding:12px}.projector .resulthead{font-size:16px}.projector .bar{height:24px}}
-</style></head><body><header><strong>EduVoice</strong><small id="subtitle">Faculty of Education · Royal University of Phnom Penh</small></header><main id="main"><nav><button class="secondary" onclick="home()" id="homebtn">Home</button><button class="secondary" onclick="setLang()" id="langbtn">ភាសាខ្មែរ / English</button></nav><section id="welcome" class="panel"><h1 id="welcomeTitle">Make every student voice count</h1><p id="welcomeText">Create a live poll for up to 500 participants, or join by QR code and session code.</p><button onclick="show('create')" id="createbtn">Create lecturer session</button><button class="secondary" onclick="show('join')" id="joinbtn">Join as student</button></section>
-<section id="create" class="panel hidden"><h2 id="createTitle">Create a poll</h2><label id="questionLabel">Question</label><textarea id="question" placeholder="What helps you learn most effectively?"></textarea><label id="optionsLabel">Answer choices (one per line)</label><textarea id="options" style="min-height:145px">Lecture
-Group discussion
-Group work
-Independent study</textarea><label id="modeLabel">Participation mode</label><select id="mode"><option value="anonymous">Anonymous</option><option value="named">Identified (name required)</option></select><p class="muted" id="modeHelp">In anonymous mode, names are not collected. Avoid asking students to enter identifying information in question text.</p><button onclick="create()" id="launchbtn">Launch poll</button><p id="createError" class="error"></p></section>
-<section id="join" class="panel hidden"><h2 id="joinTitle">Join a session</h2><label id="codeLabel">Session code</label><input id="joincode" placeholder="e.g. A1B2C3" maxlength="6"><button onclick="join()" id="joinNow">Join</button><p id="joinError" class="error"></p></section>
-<section id="student" class="panel hidden"><h2 id="studentTitle">Your response</h2><p class="muted" id="studentMeta"></p><h1 id="studentQuestion"></h1><div id="studentChoices"></div><div id="nameWrap" class="hidden"><label id="nameLabel">Your name</label><input id="studentName" autocomplete="name"></div><button id="submitbtn" onclick="vote()">Submit response</button><p id="studentMessage"></p></section>
-<section id="lecturer" class="panel hidden"><h2 id="lecturerTitle">Lecturer control room</h2><div class="grid"><div><p id="sessionCode"></p><p id="sessionUrl" class="muted"></p><button class="secondary" onclick="copyLink()" id="copybtn">Copy student link</button><a id="projectLink" class="btn secondary" target="_blank">Open projector view</a><button class="secondary" onclick="exportCSV()" id="exportbtn">Export CSV</button><button onclick="closePoll()" id="closebtn">Close poll</button></div><div style="text-align:center"><img id="qr" alt="Student QR code"><p class="muted" id="scanHint">Students scan to join · Up to 500 responses</p></div></div><hr><div id="lecturerResults"></div></section>
-<section id="projection" class="panel hidden"><p class="muted" id="projectionMeta"></p><h1 class="big" id="projectionQuestion"></h1><div id="projectionResults"></div><p class="muted" id="projectionFoot"></p></section></main>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f6f7f9">
+<title>Survey and Evaluation System | Faculty of Education</title>
+<link rel="icon" href="/static/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/static/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&family=Moul&family=Siemreap&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Serif:ital,opsz,wght@0,8..144,500;0,8..144,600;1,8..144,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0e2347;
+  --ink:#1c2430;
+  --muted:#667085;
+  --line:#e6e8ee;
+  --canvas:#f6f7f9;
+  --page:1120px;
+  --white:#ffffff;
+  --danger:#b42318;
+  --success:#067647;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 8px 24px rgba(16,24,40,.06);
+  --sans:"Noto Sans","Kantumruy Pro",sans-serif;
+  --serif:"Noto Serif","Moul",Georgia,serif;
+  --text:"Noto Sans","Siemreap","Kantumruy Pro",sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--canvas)}
+body{margin:0;color:var(--ink);background:var(--canvas);font-family:var(--sans);font-size:16px;line-height:1.5}
+body[data-view="projection"]{background:#071428;color:#f4f7fb}
+:focus-visible{outline:2px solid var(--navy);outline-offset:3px}
+::selection{background:#d9e4f5;color:var(--navy)}
+.hidden{display:none!important}
+
+header{background:var(--white);border-bottom:1px solid #eef0f3;position:sticky;top:0;z-index:5}
+.mast{max-width:var(--page);margin:0 auto;padding:10px 28px;min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;color:inherit;text-decoration:none}
+.logo{width:36px;height:auto;flex:none;display:block}
+.brand strong{font-size:.92rem;font-weight:700;letter-spacing:-.02em;line-height:1.3;max-width:16rem}
+html[lang="km"] .brand strong,html[lang="km"] .hero-brand strong{font-family:var(--serif);font-weight:400;letter-spacing:0}
+html[lang="km"] .brand strong{font-size:.78rem;line-height:1.45;max-width:13.5rem}
+nav{display:flex;gap:8px;align-items:center;flex:none}
+button,.btn{font:600 .95rem/1.2 var(--sans);border:1px solid var(--navy);background:var(--navy);color:#fff;padding:11px 16px;border-radius:12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+button.secondary,.btn.secondary,button.pill,button.back{background:#fff;color:var(--ink);border-color:#e4e7ec}
+button.pill,button.back{border-radius:999px;padding:8px 14px;min-height:40px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+button:hover,.btn:hover{filter:brightness(1.05)}
+button.secondary:hover,.btn.secondary:hover,button.pill:hover,button.back:hover,button.menucard:hover{filter:none}
+button:disabled{opacity:.45;cursor:not-allowed}
+#closebtn{background:#fff;color:var(--danger);border-color:#f0d0d4}
+
+main{max-width:var(--page);margin:0 auto;padding:20px 28px 80px;min-width:0}
+h1,h2,.question{font-family:var(--sans);font-weight:700;letter-spacing:-.02em;line-height:1.25;margin:0}
+html[lang="km"] h1,html[lang="km"] h2,html[lang="km"] h3,html[lang="km"] .question{font-family:var(--serif);font-weight:400;letter-spacing:0;line-height:1.7}
+html[lang="km"] .lede,html[lang="km"] .help,html[lang="km"] #subtitle,html[lang="km"] #welcomeText,html[lang="km"] .menunote{letter-spacing:0;line-height:1.7}
+.lede,.help,#subtitle,#welcomeText,.menunote{font-family:var(--text)}
+
+.back{margin:0 0 16px}
+.back::before{content:"";width:16px;height:16px;background:center/16px no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231c2430' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M15 6l-6 6 6 6'/></svg>")}
+body:not([data-view]) .back,body[data-view="welcome"] .back,body[data-view="projection"] .back,body[data-view="battleStage"] .back{display:none}
+
+.hero{position:relative;overflow:hidden;border-radius:20px;min-height:228px;background:#071428;color:#fff;container-type:inline-size}
+.hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:68% 42%}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,20,40,.96) 0%,rgba(7,20,40,.9) 28%,rgba(7,20,40,.72) 48%,rgba(7,20,40,.38) 66%,rgba(7,20,40,.16) 100%);pointer-events:none}
+.hero-copy{position:relative;z-index:1;padding:26px 32px 24px;max-width:34rem}
+.hero-brand{display:flex;align-items:center;gap:12px}
+.hero-brand img{width:48px;height:auto;flex:none}
+.hero-brand strong{display:block;color:#fff;font-size:.98rem;font-weight:700;letter-spacing:-.02em;line-height:1.35;max-width:18rem}
+html[lang="km"] .hero-brand strong{font-size:.92rem;line-height:1.6}
+.hero-brand small{display:block;margin-top:2px;color:rgba(255,255,255,.74);font-size:.82rem;font-family:var(--text);font-weight:400;line-height:1.45}
+#welcomeTitle{color:#fff;font-size:clamp(1.65rem,2.4vw,2.15rem);max-width:14em;margin-top:14px}
+html[lang="km"] .hero-copy{max-width:none}
+html[lang="km"] #welcomeTitle{display:block;width:max-content;max-width:100%;white-space:nowrap;font-size:clamp(1.45rem,2.3vw,2.05rem);line-height:1.4;margin-top:12px}
+#welcomeText{margin:6px 0 0;max-width:36ch;color:rgba(255,255,255,.8);font-size:.98rem}
+.photocredit{position:absolute;right:14px;bottom:10px;z-index:1;color:rgba(255,255,255,.62);font-size:11px;text-decoration:none}
+.photocredit:hover{color:#fff}
+
+.menu{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-top:16px}
+.menu .menucard{grid-column:span 2}
+button.menucard{display:flex;width:100%;min-height:118px;text-align:left;background:#fff;color:var(--ink);border:1px solid #e7ebf1;border-radius:18px;box-shadow:none;padding:16px;gap:12px;align-items:flex-start;font-weight:500}
+button.menucard:hover{border-color:#c5d0e0;background:#fbfcfe}
+.tile{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;margin-top:1px}
+.tile svg{width:20px;height:20px;display:block}
+.tile-gold{background:#f6f0e4}
+.tile-rose{background:#f8efe8}
+.tile-ink{background:#e7eef8}
+.tile-blue{background:#e7f0fb}
+.tile-green{background:#e7f6ee}
+.tile-violet{background:#efeaf8}
+.menucopy{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.menutitle{font-weight:650;font-size:1rem;line-height:1.35}
+html[lang="km"] .menutitle{font-weight:600;line-height:1.55}
+.menunote{color:var(--muted);font-size:.84rem;font-weight:400;line-height:1.45}
+.chev{width:18px;height:18px;flex:none;margin-top:4px;background:center/16px no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2398a2b3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 6l6 6-6 6'/></svg>")}
+.langswitch{display:flex;align-items:center;gap:2px;padding:3px;background:#f3f5f8;border:1px solid #e4e7ec;border-radius:999px}
+button.langopt{background:transparent;color:var(--muted);border:0;box-shadow:none;border-radius:999px;padding:5px 10px;min-height:34px;font:600 .84rem/1 var(--sans);gap:6px}
+button.langopt:hover{filter:none;color:var(--ink)}
+button.langopt[aria-pressed="true"]{background:#fff;color:var(--navy);box-shadow:0 1px 2px rgba(16,24,40,.08)}
+.flag{width:18px;height:12px;border-radius:2px;display:block;flex:none;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(16,24,40,.16)}
+
+#createTitle,#joinTitle,#studentTitle,#lecturerTitle,#recordsTitle{font-size:clamp(1.6rem,3vw,2.05rem)}
+.help,.muted{color:var(--muted)}
+.help{margin:8px 0 0;max-width:54ch}
+#createIntro,#recordsText{margin:8px 0 0;color:var(--muted);max-width:52ch}
+.create-layout{display:grid;grid-template-columns:minmax(0,40rem) minmax(16rem,22rem);gap:16px;align-items:start;margin-top:16px}
+@media(min-width:981px){
+  .create-layout form{display:contents}
+  #createTitle,#createIntro{grid-column:1 / -1}
+  .formhead,#questionList,#addQuestion,#questionHelp,.settings{grid-column:1}
+  .preview{grid-column:2;grid-row:3 / span 12}
+}
+.formhead,.qcard,.settings,.preview,#joinBox,.panel,.qrwrap,#nameWrap,#lecturerResults .qblock,#studentChoices .qblock,#responseTable .qblock,#recordSummary .qblock,.tablewrap,.gsheet,.gradebox{
+  background:#fff;border:1px solid #eef0f3;border-radius:16px;box-shadow:var(--shadow)
+}
+.formhead,.settings,.preview,#joinBox,.panel,.qrwrap,#nameWrap{padding:18px}
+.qcard{padding:16px 16px 12px;margin-top:12px}
+#studentChoices .qblock,#lecturerResults .qblock,#responseTable .qblock,#recordSummary .qblock{padding:18px 18px 10px;margin-top:12px}
+#previewQuestions .qblock{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+#previewQuestions .qblock:first-of-type{border-top:0;margin-top:8px;padding-top:0}
+#student,#joinBox{max-width:40rem}
+#joinBox{margin-top:16px}
+#student #submitbtn{margin-top:16px}
+#create > .create-layout,#lecturer,#responses,#record{min-width:0}
+#nameWrap{margin-top:12px}
+#studentMeta{margin:8px 0 0}
+#studentDesc{margin:8px 0 0}
+#studentMessage:empty,#copyState:empty{display:none}
+
+label,legend{display:block;font-weight:600;margin:16px 0 6px;padding:0}
+.formhead label:first-child,#joinBox > label,#nameWrap label,.settings legend{margin-top:0}
+input,textarea,select{font:inherit;width:100%;color:var(--ink);background:#fff;border:1px solid #e4e7ec;border-radius:12px;padding:12px}
+textarea{min-height:88px;resize:vertical}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(14,35,71,.12)}
+#joincode{font-size:1.3rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700}
+.actions{margin-top:16px}
+#addQuestion{width:100%;margin-top:12px;background:#fff;color:var(--navy);border:1px dashed #d0d5dd;border-radius:16px;min-height:52px;box-shadow:var(--shadow)}
+#questionHelp{margin:8px 2px 0}
+.settings{margin-top:12px}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+.choicerow{display:flex;align-items:center;gap:8px;margin:8px 0}
+.choicenum{width:1.4rem;flex:none;text-align:right;color:var(--muted);font-size:.9rem}
+.choicerow input{flex:1;min-width:0;width:auto}
+.choicerow button{flex:none;padding:8px 12px;white-space:nowrap}
+.qindex{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.qindex b{color:var(--navy);font-size:.82rem;font-weight:700;letter-spacing:0}
+.qhead{display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.qhead .qtext{min-height:3rem;width:100%;margin:0}
+.qhead .qtype{width:100%;max-width:22rem}
+.qhint,.qvoice{margin:0}
+.settings h3{margin:0 0 4px;font-size:1.05rem}
+.qfoot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:1px solid var(--line);margin-top:12px;padding-top:12px}
+.qfoot .switch{margin-left:auto}
+.switch{display:flex;align-items:center;gap:8px;font-weight:600;margin:0 0 0 8px}
+.switch input{width:18px;height:18px;flex:none;accent-color:var(--navy)}
+.qscale{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.qscale input{width:8.5rem;flex:none}
+.qscale select{width:5rem;flex:none}
+.keypick{display:flex;align-items:center;flex:none}
+.keypick input{width:18px;height:18px;accent-color:var(--navy)}
+.qquiz{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.qquiz label{margin-top:10px}
+.qpoints{width:6rem}
+.qyes{width:100%;max-width:16rem}
+.addstmt{margin-top:8px}
+.likert{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch}
+.likert .choice{flex:1;min-width:7.5rem;justify-content:center;text-align:center;margin:0}
+.likert-table{width:100%;border-collapse:collapse}
+.likert-table th,.likert-table td{text-align:center;padding:8px 6px}
+.likert-table .stmt{text-align:left;font-weight:600;min-width:9rem}
+.likert-table input{width:18px;height:18px;accent-color:var(--navy)}
+.gradebox{margin-top:16px;padding:18px}
+.gradebox .score{margin:0;font-size:2rem;font-weight:700;letter-spacing:-.03em;line-height:1.1}
+.passcode{max-width:9rem;letter-spacing:.42em;font-weight:700;font-size:1.35rem;text-align:center}
+.voicebox{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:4px}
+.voicebox audio{width:min(100%,20rem);height:40px}
+.voicetime{min-width:3rem;font-variant-numeric:tabular-nums;color:var(--muted)}
+.recordbtn .dot{width:10px;height:10px;border-radius:50%;background:#b42318;display:inline-block}
+.voicebox.recording .recordbtn{border-color:#b42318;color:#b42318}
+#lockBox{max-width:28rem;margin-top:16px}
+.passset{margin-top:14px}
+.review{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.review b{font-weight:600}
+.req{color:var(--danger)}
+.addopt{margin-top:4px}
+.mark{width:18px;height:18px;border:1.5px solid #98a2b3;border-radius:50%;flex:none;background:#fff}
+.mark.box{border-radius:4px}
+textarea.invalid,input.invalid{border-color:var(--danger);box-shadow:none}
+.preview{position:sticky;top:84px}
+.preview h2{font-size:1.35rem;margin:8px 0 10px;overflow-wrap:anywhere}
+.preview h2.is-empty{color:var(--muted);font-family:var(--text);font-weight:400;font-size:1rem;line-height:1.45}
+.error{color:var(--danger)}
+.success{color:var(--success)}
+#createError:empty{display:none}
+
+.choice{display:flex;align-items:center;gap:12px;border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px 14px;margin:8px 0;cursor:pointer}
+.choice:has(input:checked){border-color:var(--navy);background:#f4f7fb}
+.choice input{width:18px;height:18px;flex:none;accent-color:var(--navy)}
+.previewchoice{cursor:default}
+.scale{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.scale .choice{flex:1;min-width:3rem;justify-content:center;margin:0}
+.other-text{margin-top:8px}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:start;margin-top:16px}
+.sessionline{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.code{margin:0;font-size:2rem;font-weight:700;letter-spacing:.08em;line-height:1}
+.state{margin:0;color:var(--muted)}
+.state[data-open="no"]{color:var(--danger)}
+#sessionUrl{word-break:break-all;margin:8px 0 14px}
+.tools{display:flex;flex-wrap:wrap;gap:8px}
+.qrwrap{text-align:center}
+#qr,#battleQr{width:168px;height:auto;display:block;margin:0 auto;border-radius:8px;background:#fff}
+#battleQr{width:min(220px,100%)}
+#battlePin{margin:0 0 10px}
+.qrwrap p{margin:8px 0 0;max-width:16ch}
+.question{font-size:clamp(1.2rem,2vw,1.5rem);margin:0 0 4px}
+.tally{margin:14px 0 0;color:var(--muted)}
+.result{margin:14px 0 16px}
+.resulthead{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin-bottom:6px}
+.resulthead b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.pct{color:var(--muted);font-weight:400}
+.bar{height:8px;background:#eef1f5;border-radius:99px;overflow:hidden}
+.fill{height:100%;background:var(--navy);width:0}
+.written{margin:8px 0 12px;padding-left:1.15rem}
+.written li{margin:4px 0}
+.tablewrap{overflow-x:auto;margin-top:16px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid #eef0f3;vertical-align:top}
+th{font-weight:600;color:var(--muted);background:#fafbfc;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+tbody tr.clickrow{cursor:pointer}
+tbody tr.clickrow:hover td{background:#f7f9fc}
+td.questioncell,td.answercell{min-width:14rem}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
+.fact{background:#fff;border:1px solid #e6e8ee;border-radius:999px;padding:6px 12px;font-size:.9rem}
+.fact span{color:var(--muted);margin-right:6px}
+.sheetcount{margin:18px 0 8px;font-size:1.05rem;font-weight:700}
+.sheethead{font-family:var(--sans);font-size:1.15rem;font-weight:700;margin:22px 0 0}
+.livemark{display:inline-flex;align-items:center;gap:6px;margin-left:10px;color:var(--success);font-size:.85rem;font-weight:600}
+.livemark::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--success)}
+.recordbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+.recordswitch{display:flex;gap:4px;padding:3px;background:#fff;border:1px solid #e4e7ec;border-radius:999px}
+button.recordtab{background:transparent;color:var(--muted);border:0;box-shadow:none;border-radius:999px;min-height:36px;padding:6px 14px;font-weight:600}
+button.recordtab:hover{filter:none;color:var(--ink)}
+button.recordtab[aria-pressed="true"]{background:#0e2347;color:#fff}
+.sheetbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:16px 0 10px}
+.sheetbar .sheetcount{margin:0}
+#sheetSearch{width:min(100%,18rem);min-height:40px}
+#sheetHint{margin:0 0 8px}
+#recordOne{margin-top:12px;background:#fff;border:1px solid #e6e8ee;border-radius:16px;padding:16px 18px;box-shadow:var(--shadow)}
+#recordOne .onehead{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline}
+#recordOne .onehead b{font-size:1.05rem}
+#recordOne .onehead button{margin-left:auto}
+#recordOne .oneitem{margin-top:12px;padding-top:12px;border-top:1px solid #eef0f3}
+#recordOne .oneitem span{display:block;color:var(--muted);font-size:.78rem}
+#recordOne .oneitem p{margin:4px 0 0}
+#sessionTable .tablewrap{background:#fff;border:1px solid #e6e8ee;border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+#sessionTable th{background:#f8f9fa}
+.gsheet{overflow:auto;max-height:min(70vh,640px);margin-top:0;border:1px solid #dadce0;border-radius:12px;background:#fff;box-shadow:var(--shadow)}
+.gsheet table{border-collapse:separate;border-spacing:0;min-width:100%;font-size:.92rem}
+.gsheet th,.gsheet td{border-right:1px solid #e8eaed;border-bottom:1px solid #e8eaed;padding:10px 12px;background:#fff;min-width:11rem;max-width:20rem;white-space:normal;vertical-align:top}
+.gsheet th{position:sticky;top:0;z-index:2;background:#f8f9fa;color:var(--ink);font-weight:600}
+.gsheet .gutter{position:sticky;left:0;z-index:1;width:3rem;min-width:3rem;max-width:3rem;text-align:center;background:#f8f9fa;color:#5f6368;padding-left:6px;padding-right:6px}
+.gsheet th.gutter{z-index:3}
+.gsheet .when{min-width:12.5rem;white-space:nowrap}
+.gsheet .qnum{display:block;color:var(--muted);font-size:.75rem;font-weight:600}
+.gsheet .qtitle{display:block;line-height:1.35}
+.gsheet .qtype{display:block;margin-top:3px;color:var(--muted);font-weight:400;font-size:.78rem}
+.gsheet audio{width:min(100%,16rem);height:36px}
+.gsheet tbody tr{cursor:pointer}
+.gsheet tbody tr:hover td{background:#f8fafc}
+.gsheet tbody tr:hover td.gutter{background:#f1f3f4}
+.gsheet tbody tr.picked td{background:#f4f7fb}
+.gsheet tbody tr.picked td.gutter{background:#e7eef8;color:var(--navy);font-weight:700}
+.gsheet .emptyrow td{color:var(--muted);border-right:0;cursor:default}
+#backRecords{margin:0}
+#recordTitle{margin-top:4px}
+
+body[data-view="projection"] header{background:transparent;border-bottom-color:transparent}
+body[data-view="projection"] .brand strong{color:#fff}
+body[data-view="projection"] main{max-width:none;padding:4px 5vw 48px}
+#projectionQuestion{font-size:clamp(2rem,5vw,3.2rem);max-width:20ch;color:inherit}
+body[data-view="projection"] .bar{height:16px;background:rgba(255,255,255,.16)}
+body[data-view="projection"] .fill{background:#e7eef8}
+body[data-view="projection"] .pct,body[data-view="projection"] .muted,body[data-view="projection"] .tally,#projectionFoot,#projectionMeta{color:#c5d0df}
+body[data-view="projection"] .qblock{margin-top:22px}
+#projectionMeta{margin:0 0 8px}
+#projectionFoot{margin-top:28px}
+body[data-view="battleStage"]{background:#071428;color:#f4f7fb}
+body[data-view="battleStage"] header{background:transparent;border-bottom-color:transparent}
+body[data-view="battleStage"] .brand strong{color:#fff}
+body[data-view="battleStage"] main{max-width:none;padding:8px 5vw 48px}
+.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+button.bchoice{min-height:84px;border:0;border-radius:16px;color:#fff;font-size:1.12rem;font-weight:650;justify-content:flex-start;padding:16px 18px;text-align:left;gap:12px}
+button.bchoice.b0{background:#0e2347}
+button.bchoice.b1{background:#0f6e56}
+button.bchoice.b2{background:#8a7044}
+button.bchoice.b3{background:#7a3e49}
+button.bchoice.picked{outline:3px solid #fff;outline-offset:-6px}
+button.bchoice.right{box-shadow:inset 0 0 0 4px #b7ebc9}
+button.bchoice.wrong{opacity:.5}
+button.bchoice:disabled{cursor:default;filter:none}
+.btimer{font-variant-numeric:tabular-nums;font-size:clamp(2rem,5vw,3.2rem);font-weight:700;line-height:1}
+.bstats{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+.bstat{background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:10px 14px;min-width:7rem}
+.bstat b{display:block;font-size:1.35rem}
+body[data-view="battleStage"] .bstat{background:rgba(255,255,255,.08);border-color:transparent;color:#f4f7fb}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin-top:18px}
+.pod{width:9rem;background:#fff;color:var(--ink);border-radius:16px 16px 8px 8px;padding:14px 10px;text-align:center}
+.pod b{display:block;font-size:1.5rem}
+.pod.p1{min-height:150px;order:2}
+.pod.p2{min-height:118px;order:1}
+.pod.p3{min-height:96px;order:3}
+body[data-view="battleStage"] .pod{background:#f4f7fb}
+.bleader{margin-top:14px}
+.bleader div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+body[data-view="battleStage"] .bleader div{border-bottom-color:rgba(255,255,255,.14)}
+.stagejoin{display:flex;align-items:center;gap:28px;flex-wrap:wrap;margin:8px 0 18px}
+.stagejoin img{width:min(220px,46vw);height:auto;background:#fff;border-radius:16px;padding:10px}
+.stagejoin b{font-size:clamp(2.2rem,6vw,4.2rem);letter-spacing:.14em;line-height:1}
+@media(max-width:800px){.bgrid{grid-template-columns:1fr}}
+
+#battleMake{max-width:44rem}
+#battleMakeTitle{margin:0 0 12px;font-size:clamp(1.35rem,2.4vw,1.7rem)}
+#battleForm{display:flex;flex-direction:column;gap:14px}
+#battleMake .bsetup{background:#fff;border:1px solid #eef0f3;border-radius:16px;box-shadow:var(--shadow);padding:18px 18px 16px}
+#battleTitleLabel{margin:0 0 2px;color:var(--muted);font-size:.84rem;font-weight:600}
+#battleTitle{font-size:clamp(1.45rem,2.6vw,1.9rem);font-weight:700;line-height:1.35;border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;padding:2px 0 8px}
+#battleTitle:focus{border-bottom-color:var(--navy);box-shadow:none}
+html[lang="km"] #battleTitle{font-family:"Moul","Kantumruy Pro",serif;font-weight:400;letter-spacing:0;font-size:clamp(1.25rem,2.2vw,1.6rem);line-height:1.55}
+#battleMakeIntro{margin:4px 0 14px}
+#battleMake .bmodes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#battleMake .bmode{display:flex;align-items:center;gap:10px;margin:0;min-height:72px;padding:14px 16px;border:0;border-radius:16px;color:#fff;cursor:pointer}
+#battleMake .bmode:has(input[value="classic"]){background:#0e2347}
+#battleMake .bmode:has(input[value="accuracy"]){background:#0f6e56}
+#battleMake .bmode:has(input:checked){box-shadow:inset 0 0 0 3px #fff}
+#battleMake .bmode input{width:18px;height:18px;accent-color:#fff;flex:none}
+#battleMake .bmode b{display:block;font-size:1.02rem;font-weight:700}
+html[lang="km"] #battleMake .bmode b{font-family:"Moul","Kantumruy Pro",serif;font-weight:400;letter-spacing:0;line-height:1.5}
+#battleModeHelp{margin:10px 0 0}
+#battleMake .bsetuprow{display:flex;flex-wrap:wrap;gap:14px 18px;align-items:flex-end;justify-content:space-between;margin-top:16px}
+#battleTimeLabel{margin:0 0 8px;font-size:.84rem;color:var(--muted)}
+#battleSeconds{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+#battleMake .bchips{display:flex;flex-wrap:wrap;gap:8px}
+#battleMake .bchip{min-width:52px;min-height:42px;padding:8px 12px;border-radius:999px;background:#f3f5f8;color:var(--navy);border:1px solid #e4e7ec;box-shadow:none}
+#battleMake .bchip:hover{filter:none;background:#e7eef8}
+#battleMake .bchip[aria-pressed="true"]{background:#0e2347;color:#fff;border-color:#0e2347}
+#battleMake .bswitch{display:flex;align-items:center;gap:8px;margin:0;padding:10px 12px;border:1px solid var(--line);border-radius:999px;background:#fff;font-weight:600}
+#battleMake .bswitch input{width:18px;height:18px;accent-color:var(--navy);flex:none}
+#battleQuestions .bqcard{padding:16px}
+#battleMake .bqhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+#battleMake .blabel{color:var(--navy);font-size:.95rem}
+html[lang="km"] #battleMake .blabel{font-family:"Moul","Kantumruy Pro",serif;font-weight:400;letter-spacing:0}
+#battleMake .bqremove{background:transparent;color:var(--danger);border:0;box-shadow:none;padding:6px 8px;min-height:36px}
+#battleMake .bqremove:hover{filter:none;background:#fef3f2}
+#battleMake .bqtext{min-height:4.2rem;font-size:1.15rem;font-weight:650}
+html[lang="km"] #battleMake .bqtext{font-weight:500;letter-spacing:0}
+#battleMake .bqhint{margin:10px 0 8px;color:var(--muted);font-size:.88rem}
+#battleMake .bqopts{display:grid;gap:8px}
+#battleMake .bqrow{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;margin:0;min-height:64px;padding:6px 8px 6px 14px;border-radius:14px;color:#fff;cursor:pointer}
+#battleMake .bqmark{display:flex;align-items:center;gap:6px;min-width:1.5rem}
+#battleMake .bqrow .bqopt{width:100%;min-width:0}
+#battleMake .bqrow.b0{background:#0e2347}
+#battleMake .bqrow.b1{background:#0f6e56}
+#battleMake .bqrow.b2{background:#8a7044}
+#battleMake .bqrow.b3{background:#7a3e49}
+#battleMake .bqrow:has(.bqkey:checked){box-shadow:inset 0 0 0 3px #fff}
+#battleMake .bqkey{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+#battleMake .bqshape{font-size:1.05rem;width:1.2rem;text-align:center}
+#battleMake .bqtick{display:none;font-weight:700}
+#battleMake .bqrow:has(.bqkey:checked) .bqtick{display:inline}
+#battleMake .bqrow .bqopt{background:transparent;border:0;color:#fff;box-shadow:none;padding:8px 4px;border-radius:8px}
+#battleMake .bqrow .bqopt::placeholder{color:rgba(255,255,255,.72)}
+#battleMake .bqrow .bqopt:focus{box-shadow:none;outline:2px solid rgba(255,255,255,.85);outline-offset:2px}
+#battleMake .bqdrop{width:40px;height:40px;min-height:40px;padding:0;border:0;border-radius:10px;background:rgba(255,255,255,.16);color:#fff;box-shadow:none;font-size:1.25rem;line-height:1}
+#battleMake .bqdrop:hover{filter:none;background:rgba(255,255,255,.28)}
+#battleMake .bqdrop:disabled{opacity:.35}
+#battleAdd,#battleMake .bqadd{width:100%;background:#fff;color:var(--navy);border:1px dashed #d0d5dd;border-radius:14px;box-shadow:none;min-height:48px}
+#battleAdd:hover,#battleMake .bqadd:hover{filter:none;background:#f4f7fb}
+#battleMake .bqadd{margin-top:10px}
+#battleMake .bqexplain{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+#battleMake .bqexplain summary{cursor:pointer;color:var(--navy);font-weight:600}
+#battleMake .bqfeed{margin-top:8px;min-height:4.5rem}
+#battleError:empty{display:none}
+#battleError:not(:empty){background:#fef3f2;border:1px solid #fecdca;border-radius:12px;padding:10px 12px;margin:0}
+#battleMake .bbar{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#0e2347;color:#fff;border-radius:16px;padding:10px 10px 10px 16px}
+#battleCount{font-weight:650;white-space:nowrap}
+#battleLaunch{background:#fff;color:#0e2347;min-height:46px;flex:none}
+#battleLaunch:hover{filter:none;background:#e7eef8}
+@media(max-width:800px){
+  #battleMake .bmodes{grid-template-columns:1fr}
+  #battleMake .bsetuprow{align-items:stretch}
+  #battleLaunch{min-height:44px}
+}
+
+@media(max-width:980px){
+  .menu{grid-template-columns:1fr 1fr}
+  .menu .menucard{grid-column:auto}
+  .create-layout{grid-template-columns:1fr}
+  .preview{position:static}
+}
+@media(max-width:800px){
+  .mast{padding:12px 16px}
+  main{padding:16px 16px 56px}
+  .menu,.grid{grid-template-columns:1fr}
+  .menu .menucard,.menu .menucard:last-child{grid-column:auto}
+  button.menucard{min-height:0;padding:14px}
+  button.langopt{padding:5px 8px}
+  .hero{min-height:0;border-radius:16px}
+  .hero-copy{padding:22px 18px 52px;max-width:none}
+  .hero-photo{object-position:center 38%}
+  .hero::after{background:linear-gradient(180deg,rgba(7,20,40,.42) 0%,rgba(7,20,40,.78) 42%,#071428 74%)}
+  #welcomeTitle{max-width:100%}
+  html[lang="km"] #welcomeTitle{font-size:min(1.7rem,6.4cqi)}
+  .qfoot .switch{margin-left:0}
+  .qfoot .switch{width:100%;margin:4px 0 0}
+  .qfoot button,.tools button,.tools .btn{flex:1 1 calc(50% - 8px);min-height:44px}
+  .choicerow button{min-height:44px}
+  input,textarea,select{font-size:16px}
+  #launchbtn,#submitbtn,#joinNow,#studentRecords{width:100%;min-height:48px}
+  .likert{flex-direction:column}
+  .likert .choice{width:100%}
+  #student,#joinBox{max-width:none}
+  .choice{min-height:48px}
+  .qrwrap{justify-self:start}
+  .gsheet{max-height:none}
+  .code{font-size:1.7rem}
+  th,td{padding:10px 12px}
+}
+@media(max-width:420px){
+  button.pill{padding:8px 12px}
+  .recordtools .btn,.recordtools button{width:100%}
+}
+@media(prefers-reduced-motion:reduce){button,.btn,.fill{transition:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="mast">
+    <a class="brand" href="/">
+      <img class="logo" src="/static/logo.svg" width="40" height="36" alt="Royal University of Phnom Penh">
+      <strong id="brandName">Survey and Evaluation System</strong>
+    </a>
+    <nav>
+      <button class="pill" onclick="openResponses()" id="recordsbtn">Responses</button>
+      <div class="langswitch" role="group" aria-label="Language">
+        <button type="button" class="langopt" id="langKm" onclick="setLang('km')" aria-pressed="false">
+          <svg class="flag" viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#032ea1"/><rect y="10" width="60" height="20" fill="#de2010"/><path fill="#fff" d="M30 14.2l.7 1.5h1.4v1.1h-.7v2.4h-2.8v-2.4H27v-1.1h1.4zM23.2 17.4h2.3v2h-2.3zM34.5 17.4h2.3v2h-2.3zM22 20.2h16v1.6H22z"/></svg>
+          <span>ខ្មែរ</span>
+        </button>
+        <button type="button" class="langopt" id="langEn" onclick="setLang('en')" aria-pressed="false">
+          <svg class="flag" viewBox="0 0 60 40" aria-hidden="true"><rect width="60" height="40" fill="#012169"/><path d="M0 0l60 40M60 0L0 40" stroke="#fff" stroke-width="10"/><path d="M0 0l60 40M60 0L0 40" stroke="#C8102E" stroke-width="6"/><path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="16"/><path d="M30 0v40M0 20h60" stroke="#C8102E" stroke-width="9"/></svg>
+          <span>English</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+</header>
+<main id="main">
+  <button class="back" onclick="home()" id="homebtn">Home</button>
+  <section id="welcome">
+    <div class="hero">
+      <img class="hero-photo" src="/static/hero.jpg?v=2" alt="">
+      <div class="hero-copy">
+        <div class="hero-brand">
+          <img src="/static/logo.svg" width="52" height="46" alt="">
+          <div>
+            <strong id="heroName">Survey and Evaluation System</strong>
+            <small id="subtitle">Faculty of Education, Royal University of Phnom Penh</small>
+          </div>
+        </div>
+        <h1 id="welcomeTitle">Ask the class, then read every answer</h1>
+        <p id="welcomeText">Open a session for up to 500 students, or join with the code from your lecturer.</p>
+      </div>
+      <a class="photocredit" href="https://www.flickr.com/photos/hozinja/18066841360/" target="_blank" rel="noopener noreferrer">Photo: Eric Hossinger</a>
+    </div>
+    <div class="menu">
+      <button type="button" class="menucard" onclick="openCreate('survey')">
+        <span class="tile tile-gold" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#8a7044" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span>
+        <span class="menucopy">
+          <span class="menutitle" id="createSurvey">Create a survey</span>
+          <span class="menunote" id="createSurveyNote">Write the questions, then show the code to the class.</span>
+        </span>
+        <span class="chev" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="menucard" onclick="openCreate('self')">
+        <span class="tile tile-rose" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#8a5a32" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3"/><path d="M5.5 19c.7-3.2 3.2-5 6.5-5s5.8 1.8 6.5 5"/></svg></span>
+        <span class="menucopy">
+          <span class="menutitle" id="createSelf">Create a self-evaluation</span>
+          <span class="menunote" id="createSelfNote">Students rate themselves on a scale or in writing.</span>
+        </span>
+        <span class="chev" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="menucard" onclick="openCreate('test')">
+        <span class="tile tile-ink" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1d4e89" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8.5 12.2l2.1 2.1 4.8-4.8"/></svg></span>
+        <span class="menucopy">
+          <span class="menutitle" id="createTest">Create a test</span>
+          <span class="menunote" id="createTestNote">Mark the correct answers, then show the score.</span>
+        </span>
+        <span class="chev" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="menucard" onclick="openBattle()">
+        <span class="tile tile-violet" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#4c3d7a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v2a4 4 0 0 1-8 0V4z"/><path d="M8 6H6.5A2.5 2.5 0 0 0 9 9M16 6h1.5A2.5 2.5 0 0 1 15 9"/><path d="M12 12v3M9 19h6"/></svg></span>
+        <span class="menucopy">
+          <span class="menutitle" id="createBattle">Quiz battle</span>
+          <span class="menunote" id="createBattleNote">Kahoot style. Students join, answer together, and see the ranking.</span>
+        </span>
+        <span class="chev" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="menucard" onclick="show('join')">
+        <span class="tile tile-blue" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#1d4e89" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5"/><circle cx="17" cy="9" r="2.2"/><path d="M16 14.7c1.6.3 2.9 1.4 3.4 3.3"/></svg></span>
+        <span class="menucopy">
+          <span class="menutitle" id="joinbtn">Join with a code</span>
+          <span class="menunote" id="joinNote">Use the six-character code or the QR code in the room.</span>
+        </span>
+        <span class="chev" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="menucard" onclick="openResponses()">
+        <span class="tile tile-green" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#0f7a4a" stroke-width="1.7" stroke-linecap="round"><path d="M8 7h11M8 12h11M8 17h11"/><circle cx="4.5" cy="7" r="1" fill="#0f7a4a" stroke="none"/><circle cx="4.5" cy="12" r="1" fill="#0f7a4a" stroke="none"/><circle cx="4.5" cy="17" r="1" fill="#0f7a4a" stroke="none"/></svg></span>
+        <span class="menucopy">
+          <span class="menutitle" id="homeRecords">Class responses</span>
+          <span class="menunote" id="homeRecordsNote">Open a session and read each response.</span>
+        </span>
+        <span class="chev" aria-hidden="true"></span>
+      </button>
+    </div>
+  </section>
+
+  <section id="create" class="sheet hidden">
+    <div class="create-layout">
+      <form id="createForm" novalidate>
+        <h2 id="createTitle">Create a poll</h2>
+        <p class="help" id="createIntro">Build the form, then add as many questions as the class should answer. One session holds up to 500 responses.</p>
+        <div class="formhead">
+          <label id="formTitleLabel" for="formTitle">Form title</label>
+          <input id="formTitle" maxlength="200" placeholder="Untitled form">
+          <label id="formDescLabel" for="formDescription">Description</label>
+          <textarea id="formDescription" maxlength="800" placeholder="Describe this form for the class."></textarea>
+        </div>
+        <div id="questionList"></div>
+        <button type="button" class="secondary" id="addQuestion">Add a question</button>
+        <p class="help" id="questionHelp"></p>
+        <div class="settings">
+          <h3 id="settingsTitle">Session settings</h3>
+          <fieldset>
+            <legend id="modeLabel">Participation mode</legend>
+            <label class="choice"><input type="radio" name="pollmode" value="anonymous" checked> <span id="modeAnon">Anonymous</span></label>
+            <label class="choice"><input type="radio" name="pollmode" value="named"> <span id="modeNamed">Identified (name required)</span></label>
+            <label class="choice hidden" id="quizLine"><input type="checkbox" id="quizMode"> <span id="quizLabel">Score the answers</span></label>
+          </fieldset>
+          <p class="help" id="modeHelp">Anonymous mode does not collect names. Students can still enter identifying information if prompted.</p>
+          <p class="help hidden" id="quizHelp">Mark the correct answer on choice and short-answer questions. Students see their score after they submit. A Likert scale is not graded.</p>
+          <label id="passcodeLabel" for="responsePasscode">Response passcode</label>
+          <input class="passcode" id="responsePasscode" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Optional">
+          <p class="help" id="passcodeHelp">Leave this blank to leave responses open. Four digits are required before anyone can open the response sheet.</p>
+          <p id="createError" class="error" aria-live="polite"></p>
+          <div class="actions"><button type="submit" id="launchbtn">Launch poll</button></div>
+        </div>
+      </form>
+      <aside class="preview" aria-live="polite">
+        <p class="muted" id="previewLabel">Students will see</p>
+        <p class="muted" id="previewMode">Names are not collected.</p>
+        <div id="previewQuestions"></div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="join" class="sheet hidden">
+    <h2 id="joinTitle">Join a session</h2>
+    <div id="joinBox">
+      <label id="codeLabel" for="joincode">Session code</label>
+      <input id="joincode" placeholder="A1B2C3" maxlength="6" autocapitalize="characters" autocomplete="off" spellcheck="false">
+      <div class="actions"><button onclick="join()" id="joinNow">Join</button></div>
+      <p id="joinError" class="error" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section id="student" class="sheet hidden">
+    <h2 id="studentTitle">Your response</h2>
+    <p class="lede hidden" id="studentDesc"></p>
+    <p class="muted" id="studentMeta"></p>
+    <div id="studentChoices"></div>
+    <div id="nameWrap" class="hidden">
+      <label id="nameLabel" for="studentName">Your name</label>
+      <input id="studentName" autocomplete="name">
+    </div>
+    <button id="submitbtn" onclick="vote()">Submit response</button>
+    <p id="studentMessage" aria-live="polite"></p>
+    <div id="gradeBox" class="gradebox hidden"></div>
+    <div class="actions"><button class="secondary" id="studentRecords" onclick="openRecord(current&&current.code)">Class responses</button></div>
+  </section>
+
+  <section id="lecturer" class="hidden">
+    <h2 id="lecturerTitle">Lecturer desk</h2>
+    <div class="grid">
+      <div class="panel">
+        <div class="sessionline">
+          <p id="sessionCode" class="code"></p>
+          <p id="sessionState" class="state"></p>
+        </div>
+        <p id="sessionUrl" class="muted"></p>
+        <div class="tools">
+          <button class="secondary" onclick="copyLink()" id="copybtn">Copy student link</button>
+          <a id="projectLink" class="btn secondary" target="_blank">Open projector view</a>
+          <button class="secondary" onclick="exportCSV()" id="exportbtn">Export CSV</button>
+          <button class="secondary" id="lecturerRecords" onclick="openRecord(current&&current.code)">Response table</button>
+          <button onclick="closePoll()" id="closebtn">Close poll</button>
+        </div>
+        <p id="copyState" class="help" aria-live="polite"></p>
+        <div class="passset">
+          <label id="deskPassLabel" for="deskPass">Response passcode</label>
+          <input class="passcode" id="deskPass" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="4 digits">
+          <div class="tools">
+            <button type="button" class="secondary" id="savePassBtn">Save passcode</button>
+            <button type="button" class="secondary" id="clearPassBtn">Remove passcode</button>
+          </div>
+          <p id="passState" class="help" aria-live="polite"></p>
+        </div>
+      </div>
+      <div class="qrwrap">
+        <img id="qr" alt="QR code for students">
+        <p class="muted" id="scanHint">Students scan to join</p>
+      </div>
+    </div>
+    <div id="lecturerResults"></div>
+  </section>
+
+  <section id="responses" class="hidden">
+    <h1 id="recordsTitle">Class responses</h1>
+    <p class="lede" id="recordsText">Each session is listed here. Open a session to see every student response.</p>
+    <div id="sessionTable"></div>
+  </section>
+
+  <section id="record" class="hidden">
+    <div class="recordbar">
+      <button class="secondary" id="backRecords" onclick="openResponses()">All sessions</button>
+      <div class="recordswitch" id="recordSwitch" role="tablist">
+        <button type="button" class="recordtab" id="recordTabSheet" aria-pressed="true">Response sheet</button>
+        <button type="button" class="recordtab" id="recordTabSummary" aria-pressed="false">Summary</button>
+      </div>
+      <a class="btn secondary" id="sheetLink" href="#">Download CSV</a>
+    </div>
+    <h1 id="recordTitle" class="question"></h1>
+    <p class="lede hidden" id="recordDesc"></p>
+    <div id="lockBox" class="panel hidden">
+      <h2 id="lockTitle">Responses are locked</h2>
+      <p class="help" id="lockHelp">Enter the 4-digit passcode to see each response.</p>
+      <label id="lockLabel" for="lockCode">Passcode</label>
+      <input class="passcode" id="lockCode" type="password" inputmode="numeric" maxlength="4" autocomplete="off">
+      <div class="actions"><button type="button" id="lockBtn">See responses</button></div>
+      <p id="lockError" class="error" aria-live="polite"></p>
+    </div>
+    <div class="facts" id="recordFacts"></div>
+    <div id="recordSummary" class="hidden"></div>
+    <div id="recordSheet">
+      <div class="sheetbar">
+        <p id="sheetCount" class="sheetcount"></p>
+        <input id="sheetSearch" type="search" placeholder="Search responses">
+      </div>
+      <p class="help" id="sheetHint">Select a row to read that response.</p>
+      <div id="responseTable"></div>
+      <div id="recordOne" class="hidden"></div>
+    </div>
+  </section>
+
+  <section id="battleMake" class="sheet hidden">
+    <h2 id="battleMakeTitle">Create a quiz battle</h2>
+    <form id="battleForm" novalidate>
+      <div class="bsetup">
+        <label id="battleTitleLabel" for="battleTitle">Battle title</label>
+        <input id="battleTitle" maxlength="120">
+        <p class="help" id="battleMakeIntro">Add each question and mark the right choice. Students join with the code, answer on their phones, and see the score.</p>
+        <div class="bmodes">
+          <label class="bmode"><input type="radio" name="battleMode" value="classic" checked> <span><b id="battleClassic">Speed battle</b></span></label>
+          <label class="bmode"><input type="radio" name="battleMode" value="accuracy"> <span><b id="battleAccuracy">Accuracy</b></span></label>
+        </div>
+        <p class="help" id="battleModeHelp"></p>
+        <div class="bsetuprow">
+          <div>
+            <div id="battleTimeLabel">Seconds for each question</div>
+            <select id="battleSeconds" aria-hidden="true" tabindex="-1"><option>10</option><option selected>20</option><option>30</option><option>45</option><option>60</option></select>
+            <div class="bchips">
+              <button type="button" class="bchip" data-sec="10">10</button>
+              <button type="button" class="bchip" data-sec="20">20</button>
+              <button type="button" class="bchip" data-sec="30">30</button>
+              <button type="button" class="bchip" data-sec="45">45</button>
+              <button type="button" class="bchip" data-sec="60">60</button>
+            </div>
+          </div>
+          <label class="bswitch"><input type="checkbox" id="battleRankings" checked> <span id="battleRankLabel">Show the ranking</span></label>
+        </div>
+      </div>
+      <div id="battleQuestions"></div>
+      <button type="button" id="battleAdd">Add a question</button>
+      <p id="battleError" class="error" aria-live="polite"></p>
+      <div class="bbar"><span id="battleCount"></span><button type="submit" id="battleLaunch">Open the battle</button></div>
+    </form>
+  </section>
+  <section id="battleHost" class="hidden">
+    <h2 id="battleHostTitle">Quiz battle</h2>
+    <div class="grid">
+      <div class="panel">
+        <div class="sessionline"><p id="battleCode" class="code"></p><p id="battlePhase" class="state"></p></div>
+        <p id="battleUrl" class="muted"></p>
+        <div class="tools">
+          <button type="button" id="battleStart">Start</button>
+          <button type="button" class="secondary" id="battlePause">Pause</button>
+          <button type="button" class="secondary" id="battleReveal">Show the answer</button>
+          <button type="button" class="secondary" id="battleNext">Next question</button>
+          <button type="button" class="secondary" id="battleEnd">End the battle</button>
+          <a id="battleStageLink" class="btn secondary" target="_blank">Class screen</a>
+          <button type="button" class="secondary" id="battleExport">Download results</button>
+          <button type="button" class="secondary" id="battleMute">Sound on</button>
+        </div>
+        <p id="battleHostNote" class="help" aria-live="polite"></p>
+      </div>
+      <div class="qrwrap"><p id="battlePin" class="code"></p><img id="battleQr" width="220" height="220" alt=""><p class="muted" id="battleScan">Students scan to join</p></div>
+    </div>
+    <div id="battleHostBody"></div>
+  </section>
+  <section id="battlePlay" class="sheet hidden">
+    <div id="battleJoinBox">
+      <h2 id="battleJoinTitle">Join the battle</h2>
+      <p class="muted" id="battleJoinMeta"></p>
+      <label id="battleNickLabel" for="battleNick">Nickname</label>
+      <input id="battleNick" maxlength="24" autocomplete="nickname">
+      <div class="actions"><button type="button" id="battleJoinBtn">Join</button></div>
+      <p id="battleJoinError" class="error" aria-live="polite"></p>
+    </div>
+    <div id="battlePlayBody"></div>
+  </section>
+  <section id="battleStage" class="hidden"><div id="battleStageBody"></div></section>
+  <section id="projection" class="hidden">
+    <p id="projectionMeta"></p>
+    <h1 id="projectionQuestion"></h1>
+    <div id="projectionResults"></div>
+    <p id="projectionFoot"></p>
+  </section>
+</main>
 <script>
-let lang=localStorage.getItem('eduvoice_lang')||'en',current=null,token=null,ws=null,view='welcome';const $=id=>document.getElementById(id);
-const t={en:{welcomeTitle:'Make every student voice count',welcomeText:'Create a live poll for up to 500 participants, or join by QR code and session code.',createbtn:'Create lecturer session',joinbtn:'Join as student',createTitle:'Create a poll',questionLabel:'Question',optionsLabel:'Answer choices (one per line)',modeLabel:'Participation mode',modeHelp:'Anonymous mode does not collect names. Students can still enter identifying information if prompted.',launchbtn:'Launch poll',joinTitle:'Join a session',codeLabel:'Session code',joinNow:'Join',studentTitle:'Your response',nameLabel:'Your name',submitbtn:'Submit response',lecturerTitle:'Lecturer control room',copybtn:'Copy student link',exportbtn:'Export CSV',closebtn:'Close poll',scanHint:'Students scan to join',homebtn:'Home'},km:{welcomeTitle:'សំឡេងរបស់និស្សិតគ្រប់រូបមានតម្លៃ',welcomeText:'បង្កើតការស្ទង់មតិផ្ទាល់ ឬចូលរួមតាមកូដ QR។',createbtn:'បង្កើតវគ្គសម្រាប់គ្រូ',joinbtn:'ចូលរួមជានិស្សិត',createTitle:'បង្កើតសំណួរស្ទង់មតិ',questionLabel:'សំណួរ',optionsLabel:'ជម្រើសចម្លើយ (មួយជម្រើសក្នុងមួយបន្ទាត់)',modeLabel:'របៀបចូលរួម',modeHelp:'ការចូលរួមអនាមិកមិនប្រមូលឈ្មោះទេ។ សូមកុំស្នើសុំព័ត៌មានអត្តសញ្ញាណនៅក្នុងសំណួរ។',launchbtn:'ចាប់ផ្តើម',joinTitle:'ចូលរួមវគ្គ',codeLabel:'កូដវគ្គ',joinNow:'ចូលរួម',studentTitle:'ចម្លើយរបស់អ្នក',nameLabel:'ឈ្មោះរបស់អ្នក',submitbtn:'ដាក់ស្នើចម្លើយ',lecturerTitle:'ផ្ទាំងគ្រប់គ្រងរបស់គ្រូ',copybtn:'ចម្លងតំណសម្រាប់និស្សិត',exportbtn:'ទាញយក CSV',closebtn:'បិទការស្ទង់មតិ',scanHint:'និស្សិតស្កេនដើម្បីចូលរួម',homebtn:'ទំព័រដើម'}};
-function translate(){document.documentElement.lang=lang;Object.entries(t[lang]).forEach(([k,v])=>{if($(k))$(k).textContent=v});$('mode').options[0].text=lang==='km'?'អនាមិក':'Anonymous';$('mode').options[1].text=lang==='km'?'បង្ហាញឈ្មោះ':'Identified (name required)'}
-function setLang(){lang=lang==='en'?'km':'en';localStorage.setItem('eduvoice_lang',lang);translate();if(current)render(current)}
-function show(v){view=v;['welcome','create','join','student','lecturer','projection'].forEach(id=>$(id).classList.toggle('hidden',id!==v));$('main').classList.toggle('projector',v==='projection');document.querySelector('nav').classList.toggle('hidden',v==='projection')}
-function home(){history.replaceState({},'',location.pathname);show('welcome')}
-async function api(path,opts){let r=await fetch(path,{headers:{'Content-Type':'application/json'},...opts});if(!r.ok){let j=await r.json().catch(()=>({}));throw Error(j.detail||'Request failed')}return r.json()}
-async function create(){try{let options=$('options').value.split('\n').map(x=>x.trim()).filter(Boolean);let r=await api('/api/sessions',{method:'POST',body:JSON.stringify({question:$('question').value,options,mode:$('mode').value})});current=await api('/api/sessions/'+r.code);token=r.token;sessionStorage.setItem('eduvoice_host_'+r.code,token);history.replaceState({},'','?host='+r.code);show('lecturer');render(current);connect(r.code)}catch(e){$('createError').textContent=e.message}}
-async function join(){let code=$('joincode').value.trim().toUpperCase();try{current=await api('/api/sessions/'+code);history.replaceState({},'','?join='+code);show('student');render(current)}catch(e){$('joinError').textContent=e.message}}
+let lang=localStorage.getItem('eduvoice_lang')||'en',current=null,token=null,ws=null,view='welcome',listTimer=null,studentTimer=null,recordStamp=-1,recordCode='',recordPane='sheet',recordOpenN=0,recordIsBattle=false,gradeReview=null,createKind='survey',battleState=null,battleTimer=null,battleStamp=0,battlePhase='',battleQseq=0,battleCode='',battlePlayer='';
+const $=id=>document.getElementById(id);
+const t={
+en:{
+subtitle:'Faculty of Education, Royal University of Phnom Penh',
+welcomeTitle:'Ask the class, then read every answer',
+welcomeText:'Open a session for up to 500 students, or join with the code from your lecturer.',
+createLead:'For the lecturer',
+createNote:'Write the questions, then show the code to the class.',
+createSurvey:'Create a survey',
+createSurveyNote:'Write the questions, then show the code to the class.',
+createSelf:'Create a self-evaluation',
+createSelfNote:'Students rate themselves on a scale or in writing.',
+createTest:'Create a test',
+createTestNote:'Mark the correct answers, then show the score.',
+joinLead:'For the student',
+joinNote:'Use the six-character code or the QR code in the room.',
+createbtn:'Create a survey',
+joinbtn:'Join with a code',
+createTitle:'Create a survey',
+createIntro:'Add each question in order. A short note under the question type explains what students will do. One survey holds up to 500 responses.',
+settingsTitle:'Session settings',
+formTitleLabel:'Form title',
+formDescLabel:'Description',
+addQuestion:'Add a question',
+modeLabel:'Participation mode',
+modeAnon:'Anonymous',
+modeNamed:'Name required',
+modeHelp:'Names are not collected. Do not ask students to write a name in the question.',
+quizLabel:'Score the answers',
+quizHelp:'Mark the correct answer on choice and short-answer questions. Students see their score after they submit. Likert scales and voice answers are not graded.',
+passcodeLabel:'Response passcode',
+passcodeHelp:'Leave this blank to leave responses open. Four digits are required before anyone can open the response sheet.',
+deskPassLabel:'Response passcode',
+savePassBtn:'Save passcode',
+clearPassBtn:'Remove passcode',
+lockTitle:'Responses are locked',
+lockHelp:'Enter the 4-digit passcode to see each response.',
+lockLabel:'Passcode',
+lockBtn:'See responses',
+previewLabel:'Students will see',
+launchbtn:'Open the survey',
+joinTitle:'Join a session',
+codeLabel:'Session code',
+joinNow:'Join',
+studentTitle:'Your response',
+nameLabel:'Your name',
+submitbtn:'Submit response',
+lecturerTitle:'Lecturer desk',
+copybtn:'Copy student link',
+projectLink:'Open the class screen',
+exportbtn:'Export CSV',
+closebtn:'Close the survey',
+scanHint:'Students scan to join',
+homebtn:'Back',
+homeRecords:'Responses',
+homeRecordsNote:'Open a survey, a self-evaluation, a test, or a quiz battle.',
+recordsbtn:'Responses',
+recordsTitle:'Responses',
+recordsText:'Each survey, self-evaluation, test, and quiz battle is listed here. Open one to read every saved response.',
+studentRecords:'Responses',
+lecturerRecords:'Response table',
+backRecords:'All sessions',
+recordTabSheet:'Response sheet',
+recordTabSummary:'Summary',
+sheetHint:'Select a row to read that response.',
+sheetLink:'Download CSV',
+createBattle:'Quiz battle',
+createBattleNote:'Kahoot style. Students join, answer together, and see the ranking.',
+battleMakeTitle:'Create a quiz battle',
+battleMakeIntro:'Add each question and mark the right choice. Students join with the code, answer on their phones, and see the score.',
+battleTitleLabel:'Battle title',
+battleModeLabel:'How points work',
+battleClassic:'Speed battle',
+battleAccuracy:'Accuracy',
+battleTimeLabel:'Seconds for each question',
+battleRankLabel:'Show the ranking',
+battleAdd:'Add a question',
+battleLaunch:'Open the battle',
+battleHostTitle:'Quiz battle',
+battleStart:'Start',
+battlePause:'Pause',
+battleReveal:'Show the answer',
+battleNext:'Next question',
+battleEnd:'End the battle',
+battleStageLink:'Class screen',
+battleExport:'Download results',
+battleMute:'Sound on',
+battleScan:'Students scan to join',
+battleJoinTitle:'Join the battle',
+battleNickLabel:'Nickname',
+battleJoinBtn:'Join'
+},
+km:{
+subtitle:'មហាវិទ្យាល័យអប់រំ សាកលវិទ្យាល័យភូមិន្ទភ្នំពេញ',
+welcomeTitle:'ប្រព័ន្ធស្ទង់មតិនិងរង្វាយតម្លៃ',
+welcomeText:'មុខងារសិក្សា',
+createLead:'សម្រាប់គ្រូ',
+createNote:'សរសេរសំណួរ រួចបង្ហាញកូដឱ្យថ្នាក់។',
+createSurvey:'បង្កើតស្ទង់មតិ',
+createSurveyNote:'សរសេរសំណួរ រួចបង្ហាញកូដឱ្យថ្នាក់។',
+createSelf:'បង្កើតស្វ័យរង្វាយតម្លៃ',
+createSelfNote:'និស្សិតវាយតម្លៃខ្លួនឯង តាមមាត្រដ្ឋាន ឬការសរសេរ។',
+createTest:'បង្កើតតេស្ត',
+createTestNote:'សម្គាល់ចម្លើយត្រឹមត្រូវ រួចបង្ហាញពិន្ទុ។',
+joinLead:'សម្រាប់និស្សិត',
+joinNote:'ប្រើកូដប្រាំមួយតួ ឬកូដ QR ក្នុងបន្ទប់។',
+createbtn:'បង្កើតស្ទង់មតិ',
+joinbtn:'ចូលរួមដោយកូដ',
+createTitle:'បង្កើតស្ទង់មតិ',
+createIntro:'បន្ថែមសំណួរតាមលំដាប់។ ក្រោមប្រភេទសំណួរមានការពន្យល់ខ្លីអំពីអ្វីដែលនិស្សិតត្រូវធ្វើ។ ស្ទង់មតិមួយទទួលចម្លើយបានរហូតដល់ ៥០០។',
+settingsTitle:'ការកំណត់វគ្គ',
+formTitleLabel:'ចំណងជើងទម្រង់',
+formDescLabel:'ការពិពណ៌នា',
+addQuestion:'បន្ថែមសំណួរ',
+modeLabel:'របៀបចូលរួម',
+modeAnon:'អនាមិក',
+modeNamed:'ត្រូវបញ្ចូលឈ្មោះ',
+modeHelp:'មិនប្រមូលឈ្មោះទេ។ សូមកុំស្នើសុំឈ្មោះនៅក្នុងសំណួរ។',
+quizLabel:'គិតពិន្ទុចម្លើយ',
+quizHelp:'សម្គាល់ចម្លើយត្រឹមត្រូវលើសំណួរជ្រើសរើស និងចម្លើយខ្លី។ និស្សិតឃើញពិន្ទុបន្ទាប់ពីដាក់ស្នើ។ មាត្រដ្ឋានលីកឺត និងចម្លើយសំឡេងមិនគិតពិន្ទុទេ។',
+passcodeLabel:'លេខសម្ងាត់ចម្លើយ',
+passcodeHelp:'ទុកទទេបើចង់ឱ្យចម្លើយបើក។ បើដាក់លេខ ៤ ខ្ទង់ គេត្រូវបញ្ចូលលេខនោះទើបមើលសន្លឹកចម្លើយបាន។',
+deskPassLabel:'លេខសម្ងាត់ចម្លើយ',
+savePassBtn:'រក្សាលេខសម្ងាត់',
+clearPassBtn:'ដកលេខសម្ងាត់',
+lockTitle:'ចម្លើយត្រូវបានចាក់សោ',
+lockHelp:'បញ្ចូលលេខសម្ងាត់ ៤ ខ្ទង់ដើម្បីមើលចម្លើយនីមួយៗ។',
+lockLabel:'លេខសម្ងាត់',
+lockBtn:'មើលចម្លើយ',
+previewLabel:'និស្សិតនឹងឃើញ',
+launchbtn:'បើកស្ទង់មតិ',
+joinTitle:'ចូលរួមវគ្គ',
+codeLabel:'កូដវគ្គ',
+joinNow:'ចូលរួម',
+studentTitle:'ចម្លើយរបស់អ្នក',
+nameLabel:'ឈ្មោះរបស់អ្នក',
+submitbtn:'ដាក់ស្នើចម្លើយ',
+lecturerTitle:'ផ្ទាំងគ្រូ',
+copybtn:'ចម្លងតំណសម្រាប់និស្សិត',
+projectLink:'បើកអេក្រង់ថ្នាក់',
+exportbtn:'ទាញយក CSV',
+closebtn:'បិទស្ទង់មតិ',
+scanHint:'និស្សិតស្កេនដើម្បីចូលរួម',
+homebtn:'ត្រឡប់ក្រោយ',
+homeRecords:'ចម្លើយ',
+homeRecordsNote:'បើកស្ទង់មតិ ស្វ័យរង្វាយតម្លៃ តេស្ត ឬការប្រកួតសំណួរ។',
+recordsbtn:'ចម្លើយ',
+recordsTitle:'ចម្លើយ',
+recordsText:'ស្ទង់មតិ ស្វ័យរង្វាយតម្លៃ តេស្ត និងការប្រកួតសំណួរមាននៅទីនេះ។ បើកវគ្គដើម្បីអានចម្លើយដែលបានរក្សាទុក។',
+studentRecords:'ចម្លើយ',
+lecturerRecords:'តារាងចម្លើយ',
+backRecords:'វគ្គទាំងអស់',
+recordTabSheet:'សន្លឹកចម្លើយ',
+recordTabSummary:'សង្ខេប',
+sheetHint:'ជ្រើសជួរដើម្បីអានចម្លើយនោះ។',
+sheetLink:'ទាញយក CSV',
+createBattle:'ការប្រកួតសំណួរ',
+createBattleNote:'Kahoot style. និស្សិតចូលរួម ឆ្លើយភ្លាម ហើយមើលចំណាត់ថ្នាក់។',
+battleMakeTitle:'បង្កើតការប្រកួតសំណួរ',
+battleMakeIntro:'បន្ថែមសំណួរ រួចសម្គាល់ចម្លើយត្រឹមត្រូវ។ និស្សិតចូលរួមដោយកូដ ឆ្លើយលើទូរស័ព្ទ ហើយឃើញពិន្ទុ។',
+battleTitleLabel:'ចំណងជើងការប្រកួត',
+battleModeLabel:'របៀបគិតពិន្ទុ',
+battleClassic:'ប្រកួតល្បឿន',
+battleAccuracy:'គិតត្រឹមត្រូវ',
+battleTimeLabel:'វិនាទីសម្រាប់សំណួរនីមួយៗ',
+battleRankLabel:'បង្ហាញចំណាត់ថ្នាក់',
+battleAdd:'បន្ថែមសំណួរ',
+battleLaunch:'បើកការប្រកួត',
+battleHostTitle:'ការប្រកួតសំណួរ',
+battleStart:'ចាប់ផ្តើម',
+battlePause:'ផ្អាក',
+battleReveal:'បង្ហាញចម្លើយ',
+battleNext:'សំណួរបន្ទាប់',
+battleEnd:'បញ្ចប់ការប្រកួត',
+battleStageLink:'អេក្រង់ថ្នាក់',
+battleExport:'ទាញយកលទ្ធផល',
+battleMute:'បើកសំឡេង',
+battleScan:'និស្សិតស្កេនដើម្បីចូលរួម',
+battleJoinTitle:'ចូលរួមការប្រកួត',
+battleNickLabel:'ឈ្មោះហៅ',
+battleJoinBtn:'ចូលរួម'
+}};
+function translate(){
+  document.documentElement.lang=lang;
+  Object.entries(t[lang]).forEach(([k,v])=>{
+    let el=$(k);
+    if(!el)return;
+    if(el.tagName==='A')el.textContent=v;
+    else el.textContent=v;
+  });
+  $('qr').alt=lang==='km'?'កូដ QR សម្រាប់និស្សិត':'QR code for students';
+  $('langKm').setAttribute('aria-pressed',lang==='km'?'true':'false');
+  $('langEn').setAttribute('aria-pressed',lang==='en'?'true':'false');
+  $('formTitle').placeholder=say('Untitled form','ទម្រង់គ្មានចំណងជើង');
+  $('formDescription').placeholder=say('Describe this form for the class.','ពិពណ៌នាទម្រង់នេះសម្រាប់ថ្នាក់។');
+  if($('sheetSearch'))$('sheetSearch').placeholder=say('Search responses','ស្វែងរកចម្លើយ');
+  $('responsePasscode').placeholder=say('Optional','មិនបាច់');
+  $('deskPass').placeholder=say('4 digits','៤ ខ្ទង់');
+  let systemName=say('Survey and Evaluation System','ប្រព័ន្ធស្ទង់មតិនិងរង្វាយតម្លៃ');
+  $('brandName').textContent=systemName;
+  $('heroName').textContent=systemName;
+  document.title=systemName+' | '+(lang==='km'?'មហាវិទ្យាល័យអប់រំ':'Faculty of Education');
+  applyKind();
+  if($('questionList').children.length)refreshQuestions();
+  else updateModeHelp();
+}
+function setLang(next){
+  if(next!=='km'&&next!=='en')next=lang==='en'?'km':'en';
+  if(next===lang)return;
+  lang=next;
+  localStorage.setItem('eduvoice_lang',lang);
+  translate();
+  if(view==='responses')loadSessions();
+  else if(view==='record'&&current){if(current.battle)loadBattleHistory(current.code);else loadRecord(current.code)}
+  else if(view==='battleHost'||view==='battlePlay'||view==='battleStage'||view==='battleMake'){if(view==='battleMake')battleRefreshForm();else paintBattle()}
+  else if(current)render(current);
+}
+function show(v){
+  view=v;
+  document.body.dataset.view=v;
+  ['welcome','create','join','student','lecturer','projection','responses','record','battleMake','battleHost','battlePlay','battleStage'].forEach(id=>$(id).classList.toggle('hidden',id!==v));
+  $('main').classList.toggle('projector',v==='projection'||v==='battleStage');
+  document.querySelector('nav').classList.toggle('hidden',v==='projection'||v==='battleStage');
+  if(v!=='battleHost'&&v!=='battlePlay'&&v!=='battleStage'&&battleTimer){clearInterval(battleTimer);battleTimer=null}
+  if(v!=='responses'&&listTimer){clearInterval(listTimer);listTimer=null}
+  if(v!=='student'&&studentTimer){clearInterval(studentTimer);studentTimer=null}
+  if(v==='create')$('formTitle').focus();
+}
+function home(){if(view==='create')saveDraft();history.replaceState({},'',location.pathname);current=null;gradeReview=null;battleState=null;if(battleTimer){clearInterval(battleTimer);battleTimer=null}if(ws){ws.close();ws=null}show('welcome')}
+function say(en,km){return lang==='km'?km:en}
+function serverText(message){
+  let known={'Record a voice answer':['Record a voice answer.','សូមថតចម្លើយសំឡេង។'],'Use a voice recording':['Use a voice recording.','សូមប្រើការថតសំឡេង។'],'The voice recording is too long':['The voice recording is too long.','សំឡេងវែងពេក។'],'The voice recording is too short':['The voice recording is too short.','សំឡេងខ្លីពេក។'],'The voice recording could not be read':['The voice recording could not be read.','មិនអាចអានសំឡេងបាន។'],'Poll is closed':['This session is closed.','វគ្គនេះត្រូវបានបិទ។'],'This question type is not used in this form':['This question type is not used in this form.','ប្រភេទសំណួរនេះមិនប្រើក្នុងទម្រង់នេះទេ។'],'Choose a survey, a self-evaluation, or a test':['Choose a survey, a self-evaluation, or a test.','សូមជ្រើសស្ទង់មតិ ស្វ័យរង្វាយតម្លៃ ឬតេស្ត។'],'Mark the correct answer on at least one question':['Mark the correct answer on at least one question.','សម្គាល់ចម្លើយត្រឹមត្រូវយ៉ាងតិចមួយសំណួរ។'],'Enter a nickname':['Enter a nickname.','សូមបញ្ចូលឈ្មោះហៅ។'],'That name is already in the game':['That name is already in the game.','ឈ្មោះនេះមានក្នុងការប្រកួតហើយ។'],'This battle is full':['This battle is full.','ការប្រកួតពេញហើយ។'],'This battle has ended':['This battle has ended.','ការប្រកួតបានបញ្ចប់ហើយ។'],'Time is up':['Time is up.','អស់ពេលហើយ។'],'You already answered':['You already answered.','អ្នកបានឆ្លើយរួចហើយ។'],'Wait for the question':['Wait for the question.','រង់ចាំសំណួរ។'],'The question is paused':['The question is paused.','សំណួរត្រូវបានផ្អាក។'],'Join the battle first':['Join the battle first.','សូមចូលរួមការប្រកួតសិន។'],'Choose one answer':['Choose one answer.','សូមជ្រើសចម្លើយមួយ។'],'That control is not available now':['That control is not available now.','មិនអាចប្រើប៊ូតុងនេះនៅពេលនេះទេ។'],'Each question needs 2 to 4 choices':['Each question needs 2 to 4 choices.','សំណួរនីមួយៗត្រូវមានជម្រើស ២ ដល់ ៤។'],'Mark the correct answer':['Mark the correct answer.','សម្គាល់ចម្លើយត្រឹមត្រូវ។'],'Battle not found':['Battle not found.','រកមិនឃើញការប្រកួត។']};
+  if(known[message])return say(known[message][0],known[message][1]);
+  return message;
+}
+async function api(path,opts){let r=await fetch(path,{headers:{'Content-Type':'application/json'},...opts});if(!r.ok){let j=await r.json().catch(()=>({}));let d=j.detail;let message=typeof d==='string'?d:Array.isArray(d)?d.map(x=>x.msg).filter(Boolean).join(' '):say('The request could not be completed.','សំណើមិនបានសម្រេច។');throw Error(serverText(message)||say('The request could not be completed.','សំណើមិនបានសម្រេច។'))}return r.json()}
+const QUESTION_TYPES=['short','paragraph','single','multi','dropdown','scale','likert','voice'];
+const FORMS={
+  survey:{types:['short','paragraph','single','multi','dropdown','scale','likert','voice'],mode:'anonymous',quiz:false,en:{title:'Create a survey',intro:'Add each question in order. A short note under the question type explains what students will do. One survey holds up to 500 responses.',launch:'Open the survey',close:'Close the survey',closed:'This survey is closed.',confirm:'Close this survey?',fallback:'Your response',submit:'Submit response',ask:'Question'},km:{title:'បង្កើតស្ទង់មតិ',intro:'បន្ថែមសំណួរតាមលំដាប់។ ក្រោមប្រភេទសំណួរមានការពន្យល់ខ្លីអំពីអ្វីដែលនិស្សិតត្រូវធ្វើ។ ស្ទង់មតិមួយទទួលចម្លើយបានរហូតដល់ ៥០០។',launch:'បើកស្ទង់មតិ',close:'បិទស្ទង់មតិ',closed:'ស្ទង់មតិនេះត្រូវបានបិទ។',confirm:'បិទស្ទង់មតិនេះ?',fallback:'ចម្លើយរបស់អ្នក',submit:'ដាក់ស្នើចម្លើយ',ask:'សំណួរ'}},
+  self:{types:['likert','scale','short','paragraph'],mode:'named',quiz:false,en:{title:'Create a self-evaluation',intro:'Add a scale or a written reflection. Students evaluate themselves. One self-evaluation holds up to 500 responses.',launch:'Open the self-evaluation',close:'Close the self-evaluation',closed:'This self-evaluation is closed.',confirm:'Close this self-evaluation?',fallback:'Your self-evaluation',submit:'Submit self-evaluation',ask:'What are you evaluating?'},km:{title:'បង្កើតស្វ័យរង្វាយតម្លៃ',intro:'បន្ថែមមាត្រដ្ឋាន ឬការឆ្លុះបញ្ចាំងជាអក្សរ។ និស្សិតវាយតម្លៃខ្លួនឯង។ ស្វ័យរង្វាយតម្លៃមួយទទួលចម្លើយបានរហូតដល់ ៥០០។',launch:'បើកស្វ័យរង្វាយតម្លៃ',close:'បិទស្វ័យរង្វាយតម្លៃ',closed:'ស្វ័យរង្វាយតម្លៃនេះត្រូវបានបិទ។',confirm:'បិទស្វ័យរង្វាយតម្លៃនេះ?',fallback:'ស្វ័យរង្វាយតម្លៃរបស់អ្នក',submit:'ដាក់ស្នើស្វ័យរង្វាយតម្លៃ',ask:'តើវាយតម្លៃអ្វី?'}},
+  test:{types:['single','multi','dropdown','yesno','short','paragraph'],mode:'named',quiz:true,en:{title:'Create a test',intro:'Write each question and mark the correct answer. Students see their score after they submit. One test holds up to 500 responses.',launch:'Open the test',close:'Close the test',closed:'This test is closed.',confirm:'Close this test?',fallback:'Your test',submit:'Submit test',ask:'Question'},km:{title:'បង្កើតតេស្ត',intro:'សរសេរសំណួរ រួចសម្គាល់ចម្លើយត្រឹមត្រូវ។ និស្សិតឃើញពិន្ទុបន្ទាប់ពីដាក់ស្នើ។ តេស្តមួយទទួលចម្លើយបានរហូតដល់ ៥០០។',launch:'បើកតេស្ត',close:'បិទតេស្ត',closed:'តេស្តនេះត្រូវបានបិទ។',confirm:'បិទតេស្តនេះ?',fallback:'តេស្តរបស់អ្នក',submit:'ដាក់ស្នើតេស្ត',ask:'សំណួរ'}}
+};
+function formText(kind,key){let pack=FORMS[kind]||FORMS.survey;return lang==='km'?pack.km[key]:pack.en[key]}
+function sessionKind(s){return s&&(s.kind==='self'||s.kind==='test'||s.kind==='survey')?s.kind:'survey'}
+function kindName(kind){return kind==='self'?say('Self-evaluation','ស្វ័យរង្វាយតម្លៃ'):kind==='test'?say('Test','តេស្ត'):say('Survey','ស្ទង់មតិ')}
+function blankQuestion(kind){if(kind==='self')return {type:'likert',text:'',options:likertDefaults(),rows:[''],required:true};return {type:'single',text:'',options:['',''],required:true}}
+function applyKind(){
+  let pack=FORMS[createKind]||FORMS.survey;
+  $('quizMode').checked=pack.quiz;
+  $('quizLine').classList.add('hidden');
+  $('quizHelp').classList.toggle('hidden',createKind!=='test');
+  $('createTitle').textContent=formText(createKind,'title');
+  $('createIntro').textContent=formText(createKind,'intro');
+  $('launchbtn').textContent=formText(createKind,'launch');
+}
+function openCreate(kind){
+  if(!FORMS[kind])kind='survey';
+  if(view==='create')saveDraft();
+  createKind=kind;
+  $('questionList').innerHTML='';
+  $('createError').textContent='';
+  if(!restoreDraft())resetCreate(kind);
+  applyKind();
+  show('create');
+  refreshQuestions();
+}
+function resetCreate(kind){
+  $('formTitle').value='';
+  $('formDescription').value='';
+  $('responsePasscode').value='';
+  let mode=(FORMS[kind]||FORMS.survey).mode;
+  let radio=document.querySelector(`input[name="pollmode"][value="${mode}"]`);
+  if(radio)radio.checked=true;
+  $('quizMode').checked=!!(FORMS[kind]||FORMS.survey).quiz;
+  $('questionList').innerHTML='';
+  addQuestionCard(blankQuestion(kind));
+}
+function typeName(type){
+  let names={short:['Short answer','ចម្លើយខ្លី'],paragraph:['Paragraph','កថាខណ្ឌ'],text:['Short answer','ចម្លើយខ្លី'],single:['Multiple choice','ពហុជ្រើសរើស'],multi:['Checkboxes','ប្រអប់ធីក'],dropdown:['Dropdown','បញ្ជីជ្រើសរើស'],scale:['Linear scale','មាត្រដ្ឋានលេខ'],likert:['Feedback scale','មាត្រដ្ឋានមតិ'],voice:['Voice answer','ចម្លើយសំឡេង'],yesno:['Yes or no','បាទ/ចាស ឬទេ']};
+  let pair=names[type]||names.short;
+  return say(pair[0],pair[1]);
+}
+function typeHint(type){
+  let hints={short:['Students write one short answer.','និស្សិតសរសេរចម្លើយខ្លីមួយ។'],paragraph:['Students write a longer answer.','និស្សិតសរសេរចម្លើយវែង។'],single:['Students choose one option.','និស្សិតជ្រើសបានមួយជម្រើស។'],multi:['Students may choose more than one option.','និស្សិតជ្រើសបានច្រើនជម្រើស។'],dropdown:['Students choose one option from a list.','និស្សិតជ្រើសមួយពីបញ្ជី។'],scale:['Students pick a number on a scale.','និស្សិតជ្រើសលេខលើមាត្រដ្ឋាន។'],likert:['Students rate each statement on the same scale.','និស្សិតវាយតម្លៃសេចក្តីថ្លែងនីមួយៗលើមាត្រដ្ឋានតែមួយ។'],voice:['Students record one answer, up to 60 seconds.','និស្សិតថតសំឡេងមួយ រហូតដល់ ៦០ វិនាទី។'],yesno:['Students choose yes or no.','និស្សិតជ្រើសបាទ/ចាស ឬទេ។']};
+  let pair=hints[type]||hints.short;
+  return say(pair[0],pair[1]);
+}
+function isChoice(type){return type==='single'||type==='multi'||type==='dropdown'}
+function likertDefaults(){return lang==='km'?['មិនយល់ស្របខ្លាំង','មិនយល់ស្រប','ធម្មតា','យល់ស្រប','យល់ស្របខ្លាំង']:['Strongly disagree','Disagree','Neutral','Agree','Strongly agree']}
+function optionMin(type){return type==='likert'?3:2}
+function optionMax(type){return type==='likert'?7:20}
+function addOptionRow(card,value=''){
+  let box=card.querySelector('.qoptions');
+  if(box.querySelectorAll('.choicerow').length>=optionMax(card.querySelector('.qtype').value))return;
+  let row=document.createElement('div');
+  row.className='choicerow';
+  row.innerHTML='<span class="keypick"><input type="checkbox" class="qkey"></span><span class="choicenum"></span><span class="mark" aria-hidden="true"></span><input maxlength="160" autocomplete="off"><button type="button" class="secondary"></button>';
+  row.querySelector('input:not(.qkey)').value=value;
+  row.querySelector('input:not(.qkey)').addEventListener('input',()=>{row.querySelector('input:not(.qkey)').classList.remove('invalid');$('createError').textContent='';preview()});
+  row.querySelector('.qkey').addEventListener('change',()=>{
+    if(card.querySelector('.qtype').value!=='multi')card.querySelectorAll('.qoptions .qkey').forEach(el=>{if(el!==row.querySelector('.qkey'))el.checked=false});
+    preview();
+  });
+  row.querySelector('button').addEventListener('click',()=>{if(box.querySelectorAll('.choicerow').length<=optionMin(card.querySelector('.qtype').value))return;row.remove();refreshQuestions()});
+  box.appendChild(row);
+}
+function addStatementRow(card,value=''){
+  let box=card.querySelector('.qstatements');
+  if(box.querySelectorAll('.choicerow').length>=10)return;
+  let row=document.createElement('div');
+  row.className='choicerow';
+  row.innerHTML='<input maxlength="200" autocomplete="off"><button type="button" class="secondary"></button>';
+  row.querySelector('input').value=value;
+  row.querySelector('input').addEventListener('input',()=>{row.querySelector('input').classList.remove('invalid');$('createError').textContent='';preview()});
+  row.querySelector('button').addEventListener('click',()=>{if(box.querySelectorAll('.choicerow').length<=1)return;row.remove();refreshQuestions()});
+  box.appendChild(row);
+}
+function onTypeChange(card){
+  let type=card.querySelector('.qtype').value;
+  if(type==='likert'){
+    let filled=[...card.querySelectorAll('.qoptions input:not(.qkey)')].some(i=>i.value.trim());
+    if(!filled){card.querySelector('.qoptions').innerHTML='';likertDefaults().forEach(v=>addOptionRow(card,v))}
+    if(!card.querySelector('.qstatements .choicerow'))addStatementRow(card,'');
+  }else if(isChoice(type)&&!card.querySelector('.qoptions .choicerow')){addOptionRow(card,'');addOptionRow(card,'')}
+  refreshQuestions();
+}
+function moveCard(card,dir){
+  let list=$('questionList');
+  let cards=[...list.children];
+  let i=cards.indexOf(card),j=i+dir;
+  if(j<0||j>=cards.length)return;
+  if(dir<0)list.insertBefore(card,cards[j]);
+  else list.insertBefore(cards[j],card);
+  refreshQuestions();
+  card.querySelector('.qtext').focus();
+}
+function addQuestionCard(data){
+  let card=document.createElement('article');
+  card.className='qcard';
+  card.innerHTML='<div class="qindex"><b class="qlabel"></b></div><div class="qhead"><textarea class="qtext" maxlength="500" rows="2"></textarea><select class="qtype"></select><p class="help qhint"></p></div><div class="qoptions"></div><button type="button" class="secondary addopt"></button><label class="switch qotherline"><input type="checkbox" class="qother"><span class="otherlabel"></span></label><div class="qscale"><input class="qlow" maxlength="40"><span>1</span><select class="qhigh"><option value="5">5</option><option value="10">10</option></select><input class="qhighlabel" maxlength="40"></div><div class="qstatements"><p class="help stmtlabel"></p></div><button type="button" class="secondary addstmt"></button><p class="help qvoice hidden"></p><div class="qquiz"><label><span class="pointslabel"></span><input class="qpoints" type="number" min="0" max="10" step="1" value="1"></label><label class="qyesline"><span class="yeslabel"></span><select class="qyes"><option value=""></option><option value="0"></option><option value="1"></option></select></label><label class="qcorrectline"><span class="correctlabel"></span><input class="qcorrect" maxlength="300"></label><label><span class="feedbacklabel"></span><textarea class="qfeedback" maxlength="300" rows="2"></textarea></label></div><div class="qfoot"><button type="button" class="secondary qup"></button><button type="button" class="secondary qdown"></button><button type="button" class="secondary qdup"></button><button type="button" class="secondary qremove"></button><label class="switch"><input type="checkbox" class="qrequired" checked><span class="reqlabel"></span></label></div>';
+  let select=card.querySelector('.qtype');
+  let allowed=(FORMS[createKind]||FORMS.survey).types;
+  allowed.forEach(type=>{let o=document.createElement('option');o.value=type;select.appendChild(o)});
+  select.value=allowed.includes(data?.type)?data.type:allowed[0];
+  card.querySelector('.qtext').value=data?.text||'';
+  card.querySelector('.qrequired').checked=data?.required!==false;
+  card.querySelector('.qother').checked=!!data?.other;
+  card.querySelector('.qhigh').value=data?.high===10?'10':'5';
+  card.querySelector('.qlow').value=data?.lowLabel||'';
+  card.querySelector('.qhighlabel').value=data?.highLabel||'';
+  card.querySelector('.qpoints').value=Number.isInteger(data?.points)?String(data.points):'1';
+  card.querySelector('.qcorrect').value=typeof data?.correct==='string'?data.correct:(data?.correctText||'');
+  if(data?.yes==='0'||data?.yes==='1')card.querySelector('.qyes').value=data.yes;
+  else if(data?.correct===0||data?.correct===1)card.querySelector('.qyes').value=String(data.correct);
+  card.querySelector('.qfeedback').value=data?.feedback||'';
+  let options=data?.options?.length?data.options:(select.value==='likert'?likertDefaults():isChoice(select.value)?['','']:[]);
+  options.forEach(v=>addOptionRow(card,v));
+  if(isChoice(select.value))while(card.querySelectorAll('.qoptions .choicerow').length<2)addOptionRow(card,'');
+  let keys=card.querySelectorAll('.qoptions .qkey');
+  if(Array.isArray(data?.keys))keys.forEach((el,i)=>{el.checked=!!data.keys[i]});
+  else if(Array.isArray(data?.correct))data.correct.forEach(i=>{if(keys[i])keys[i].checked=true});
+  else if(Number.isInteger(data?.correct)&&keys[data.correct])keys[data.correct].checked=true;
+  (data?.rows||[]).forEach(v=>addStatementRow(card,v));
+  if(select.value==='likert'&&!card.querySelector('.qstatements .choicerow'))addStatementRow(card,'');
+  select.addEventListener('change',()=>onTypeChange(card));
+  card.querySelector('.qtext').addEventListener('input',()=>{card.querySelector('.qtext').classList.remove('invalid');$('createError').textContent='';preview()});
+  card.querySelector('.qother').addEventListener('change',preview);
+  card.querySelector('.qrequired').addEventListener('change',preview);
+  card.querySelector('.qhigh').addEventListener('change',preview);
+  card.querySelector('.qlow').addEventListener('input',preview);
+  card.querySelector('.qhighlabel').addEventListener('input',preview);
+  card.querySelector('.qpoints').addEventListener('input',preview);
+  card.querySelector('.qcorrect').addEventListener('input',preview);
+  card.querySelector('.qyes').addEventListener('change',preview);
+  card.querySelector('.qfeedback').addEventListener('input',preview);
+  card.querySelector('.addopt').addEventListener('click',()=>{addOptionRow(card,'');refreshQuestions();let inputs=card.querySelectorAll('.qoptions .choicerow input:not(.qkey)');inputs[inputs.length-1]?.focus()});
+  card.querySelector('.addstmt').addEventListener('click',()=>{addStatementRow(card,'');refreshQuestions();let inputs=card.querySelectorAll('.qstatements input');inputs[inputs.length-1]?.focus()});
+  card.querySelector('.qup').addEventListener('click',()=>moveCard(card,-1));
+  card.querySelector('.qdown').addEventListener('click',()=>moveCard(card,1));
+  card.querySelector('.qdup').addEventListener('click',()=>{let copy=addQuestionCard(readCard(card));card.after(copy);refreshQuestions();copy.querySelector('.qtext').focus()});
+  card.querySelector('.qremove').addEventListener('click',()=>{if($('questionList').children.length<=1)return;card.remove();refreshQuestions()});
+  $('questionList').appendChild(card);
+  refreshQuestions();
+  return card;
+}
+function refreshQuestions(){
+  let cards=[...$('questionList').children];
+  cards.forEach((card,i)=>{
+    let type=card.querySelector('.qtype').value;
+    [...card.querySelectorAll('.qtype option')].forEach(o=>{o.textContent=typeName(o.value)});
+    card.querySelector('.qlabel').textContent=say('Question ','សំណួរ ')+(i+1);
+    card.querySelector('.qtype').setAttribute('aria-label',say('Question type','ប្រភេទសំណួរ')+' '+(i+1));
+    card.querySelector('.qhint').textContent=typeHint(type);
+    card.querySelector('.qvoice').textContent=say('The recording is saved with the response. Students can listen before they submit.','សំឡេងត្រូវបានរក្សាទុកជាមួយចម្លើយ។ និស្សិតអាចស្តាប់មុនដាក់ស្នើ។');
+    card.querySelector('.qvoice').classList.toggle('hidden',type!=='voice');
+    card.querySelector('.qtext').placeholder=formText(createKind,'ask');
+    let up=card.querySelector('.qup'),down=card.querySelector('.qdown'),dup=card.querySelector('.qdup'),remove=card.querySelector('.qremove');
+    up.textContent=say('Move up','រំកិលឡើង');down.textContent=say('Move down','រំកិលចុះ');dup.textContent=say('Copy','ចម្លង');remove.textContent=say('Delete','លុប');
+    up.disabled=i===0;down.disabled=i===cards.length-1;remove.disabled=cards.length<=1;
+    card.querySelector('.reqlabel').textContent=say('Required','ចាំបាច់');
+    card.querySelector('.otherlabel').textContent=say('Add “Other”','បន្ថែម “ផ្សេងទៀត”');
+    card.querySelector('.qlow').placeholder=say('Low label','ស្លាកទាប');
+    card.querySelector('.qhighlabel').placeholder=say('High label','ស្លាកខ្ពស់');
+    let choice=isChoice(type),likert=type==='likert',quiz=$('quizMode').checked,graded=quiz&&(choice||type==='short'||type==='paragraph'||type==='yesno');
+    card.querySelector('.qoptions').classList.toggle('hidden',!choice&&!likert);
+    card.querySelector('.addopt').classList.toggle('hidden',!choice&&!likert);
+    card.querySelector('.addopt').textContent=likert?say('Add a label','បន្ថែមស្លាក'):say('Add option','បន្ថែមជម្រើស');
+    card.querySelector('.addopt').disabled=card.querySelectorAll('.qoptions .choicerow').length>=optionMax(type);
+    card.querySelector('.qotherline').classList.toggle('hidden',type!=='single'&&type!=='multi');
+    card.querySelector('.qscale').classList.toggle('hidden',type!=='scale');
+    card.querySelector('.qstatements').classList.toggle('hidden',!likert);
+    card.querySelector('.addstmt').classList.toggle('hidden',!likert);
+    card.querySelector('.addstmt').textContent=say('Add a statement','បន្ថែមសេចក្តីថ្លែង');
+    card.querySelector('.addstmt').disabled=card.querySelectorAll('.qstatements .choicerow').length>=10;
+    card.querySelector('.stmtlabel').textContent=say('Statements rated on this scale','សេចក្តីថ្លែងដែលវាយតម្លៃលើមាត្រដ្ឋាននេះ');
+    card.querySelector('.qquiz').classList.toggle('hidden',!graded);
+    card.querySelector('.qcorrectline').classList.toggle('hidden',type!=='short'&&type!=='paragraph');
+    card.querySelector('.qyesline').classList.toggle('hidden',type!=='yesno');
+    card.querySelector('.yeslabel').textContent=say('Correct answer','ចម្លើយត្រឹមត្រូវ');
+    let yes=card.querySelector('.qyes');
+    yes.options[0].textContent=say('Choose','ជ្រើស');
+    yes.options[1].textContent=say('Yes','បាទ/ចាស');
+    yes.options[2].textContent=say('No','ទេ');
+    card.querySelector('.pointslabel').textContent=say('Points','ពិន្ទុ');
+    card.querySelector('.correctlabel').textContent=say('Correct answer','ចម្លើយត្រឹមត្រូវ');
+    card.querySelector('.feedbacklabel').textContent=say('Feedback after submitting','មតិកែលម្អបន្ទាប់ពីដាក់ស្នើ');
+    card.querySelector('.qcorrect').placeholder=say('Accepted answer','ចម្លើយដែលទទួល');
+    card.querySelector('.qfeedback').placeholder=say('Shown with the score','បង្ហាញជាមួយពិន្ទុ');
+    [...card.querySelectorAll('.qoptions .choicerow')].forEach((row,n)=>{
+      row.querySelector('.choicenum').textContent=String(n+1);
+      row.querySelector('.choicenum').classList.toggle('hidden',type!=='dropdown');
+      row.querySelector('.keypick').classList.toggle('hidden',!quiz||!choice);
+      row.querySelector('.qkey').setAttribute('aria-label',say('Correct answer','ចម្លើយត្រឹមត្រូវ')+' '+(n+1));
+      let mark=row.querySelector('.mark');
+      mark.classList.toggle('hidden',type==='dropdown'||likert);
+      mark.classList.toggle('box',type==='multi');
+      let input=row.querySelector('input:not(.qkey)');
+      input.maxLength=likert?40:160;
+      input.placeholder=(likert?say('Label ','ស្លាក '):say('Option ','ជម្រើស '))+(n+1);
+      input.setAttribute('aria-label',input.placeholder);
+      let btn=row.querySelector('button');
+      btn.textContent=say('Remove','លុប');
+      btn.disabled=card.querySelectorAll('.qoptions .choicerow').length<=optionMin(type);
+    });
+    [...card.querySelectorAll('.qstatements .choicerow')].forEach((row,n)=>{
+      let input=row.querySelector('input');
+      input.placeholder=say('Statement ','សេចក្តីថ្លែង ')+(n+1);
+      input.setAttribute('aria-label',input.placeholder);
+      let btn=row.querySelector('button');
+      btn.textContent=say('Remove','លុប');
+      btn.disabled=card.querySelectorAll('.qstatements .choicerow').length<=1;
+    });
+  });
+  $('addQuestion').disabled=cards.length>=50;
+  $('questionHelp').textContent=say(cards.length+(cards.length===1?' question':' questions'),cards.length+' សំណួរ');
+  updateModeHelp();
+}
+function initQuestions(){
+  if($('questionList').children.length)return;
+  addQuestionCard({type:'single',text:'',options:['',''],required:true});
+}
+function updateModeHelp(){
+  let named=document.querySelector('input[name="pollmode"]:checked')?.value==='named';
+  $('modeHelp').textContent=named?say('Students enter a name before submitting. The name appears in the response table.','និស្សិតបញ្ចូលឈ្មោះមុនដាក់ស្នើ។ ឈ្មោះបង្ហាញក្នុងតារាងចម្លើយ។'):t[lang].modeHelp;
+  preview();
+}
+function readCard(card){
+  let type=card.querySelector('.qtype').value;
+  let kept=[...card.querySelectorAll('.qoptions .choicerow')].filter(row=>row.querySelector('input:not(.qkey)').value.trim());
+  let correct=null;
+  if(type==='single'||type==='dropdown'){let i=kept.findIndex(row=>row.querySelector('.qkey').checked);correct=i>=0?i:null}
+  else if(type==='multi'){correct=kept.map((row,i)=>row.querySelector('.qkey').checked?i:null).filter(i=>i!=null);if(!correct.length)correct=null}
+  else if(type==='short'||type==='paragraph'){let text=card.querySelector('.qcorrect').value.trim();correct=text||null}
+  else if(type==='yesno'){let value=card.querySelector('.qyes').value;correct=value===''?null:Number(value)}
+  if(!$('quizMode').checked)correct=null;
+  let rawPoints=card.querySelector('.qpoints').value.trim();
+  let points=rawPoints===''?1:Number(rawPoints);
+  if(!Number.isInteger(points))points=1;
+  points=Math.max(0,Math.min(10,points));
+  return {type,text:card.querySelector('.qtext').value.trim(),options:kept.map(row=>row.querySelector('input:not(.qkey)').value.trim()),rows:[...card.querySelectorAll('.qstatements input')].map(i=>i.value.trim()).filter(Boolean),required:card.querySelector('.qrequired').checked,other:card.querySelector('.qother').checked&&(type==='single'||type==='multi'),high:Number(card.querySelector('.qhigh').value)||5,lowLabel:card.querySelector('.qlow').value.trim(),highLabel:card.querySelector('.qhighlabel').value.trim(),points,correct,feedback:card.querySelector('.qfeedback').value.trim()};
+}
+function readQuestions(){return [...$('questionList').children].map(readCard)}
+function previewChoice(label,box,keyed){return `<div class="choice previewchoice"><span class="mark${box?' box':''}" aria-hidden="true"></span><span>${escapeHTML(label)}</span>${keyed?` <b>${escapeHTML(say('Correct','ត្រឹមត្រូវ'))}</b>`:''}</div>`}
+function isKeyed(q,index){
+  if(!$('quizMode').checked)return false;
+  if(q.type==='multi')return Array.isArray(q.correct)&&q.correct.includes(index);
+  return q.correct===index;
+}
+function preview(){
+  let named=document.querySelector('input[name="pollmode"]:checked')?.value==='named';
+  $('previewMode').textContent=(named?say('A name is required.','ត្រូវបញ្ចូលឈ្មោះ។'):say('Names are not collected.','មិនប្រមូលឈ្មោះទេ។'))+($('quizMode').checked?say(' Quiz scores are shown after submitting.',' ពិន្ទុប្រលងបង្ហាញបន្ទាប់ពីដាក់ស្នើ។'):'')+(/^\d{4}$/.test($('responsePasscode').value.trim())?say(' Responses are locked with a passcode.',' ចម្លើយត្រូវបានចាក់សោដោយលេខសម្ងាត់។'):'');
+  let title=$('formTitle').value.trim(),desc=$('formDescription').value.trim();
+  let head=`<h2 class="${title?'':'is-empty'}">${escapeHTML(title||say('Untitled form','ទម្រង់គ្មានចំណងជើង'))}</h2>`+(desc?`<p class="help">${escapeHTML(desc)}</p>`:'');
+  $('previewQuestions').innerHTML=head+readQuestions().map((q,i)=>{
+    let titleText=q.text||say('Question','សំណួរ');
+    let star=q.required?' <span class="req">*</span>':'';
+    let body='';
+    if(isChoice(q.type)){
+      let opts=q.options.slice();
+      if(q.other)opts.push(say('Other','ផ្សេងទៀត'));
+      body=opts.length?opts.map((o,n)=>q.type==='dropdown'?`<p>${escapeHTML(o)}${isKeyed(q,n)?` <b>${escapeHTML(say('Correct','ត្រឹមត្រូវ'))}</b>`:''}</p>`:previewChoice(o,q.type==='multi',isKeyed(q,n))).join(''):`<p class="muted">${say('Add at least two options.','បន្ថែមយ៉ាងតិចពីរជម្រើស។')}</p>`;
+    }else if(q.type==='likert'){
+      let labels=q.options.length?q.options.map(o=>`<span class="choice previewchoice"><span>${escapeHTML(o)}</span></span>`).join(''):`<p class="muted">${say('Add at least three labels.','បន្ថែមយ៉ាងតិចបីស្លាក។')}</p>`;
+      let rows=q.rows.length?q.rows.map(row=>`<p>${escapeHTML(row)}</p>`).join(''):`<p class="muted">${say('Add a statement.','បន្ថែមសេចក្តីថ្លែង។')}</p>`;
+      body=rows+`<div class="likert">${labels}</div>`;
+    }else if(q.type==='yesno'){
+      body=[0,1].map(n=>previewChoice(n?say('No','ទេ'):say('Yes','បាទ/ចាស'),false,isKeyed(q,n))).join('');
+    }else if(q.type==='paragraph'||q.type==='short'){
+      body=`<p class="muted">${q.type==='paragraph'?say('Paragraph answer','ចម្លើយជាកថាខណ្ឌ'):say('Short answer','ចម្លើយខ្លី')}</p>`+(q.correct?`<p class="muted">${escapeHTML(say('Correct answer: ','ចម្លើយត្រឹមត្រូវ៖ '))}${escapeHTML(q.correct)}</p>`:'');
+    }else if(q.type==='voice'){
+      body=`<p class="muted">${escapeHTML(say('Voice recording, up to 60 seconds.','ថតសំឡេង រហូតដល់ ៦០ វិនាទី។'))}</p>`;
+    }else if(q.type==='scale'){
+      let high=q.high||5;
+      body=`<div class="scale"><span class="muted">${escapeHTML(q.lowLabel||'1')}</span>${Array.from({length:high},(_,n)=>`<div class="choice previewchoice"><span>${n+1}</span></div>`).join('')}<span class="muted">${escapeHTML(q.highLabel||String(high))}</span></div>`;
+    }else body=`<p class="muted">${say('Short answer','ចម្លើយខ្លី')}</p>`;
+    let points=$('quizMode').checked&&q.correct!=null&&q.points?`<p class="muted">${q.points} ${escapeHTML(say('points','ពិន្ទុ'))}</p>`:'';
+    return `<section class="qblock"><h2 class="${q.text?'':'is-empty'}">${i+1}. ${escapeHTML(titleText)}${star}</h2><p class="muted">${escapeHTML(typeName(q.type))}</p>${body}${points}</section>`;
+  }).join('');
+  saveDraft();
+}
+function saveDraft(){
+  if(view!=='create')return;
+  let questions=[...$('questionList').children].map(card=>({type:card.querySelector('.qtype').value,text:card.querySelector('.qtext').value,options:[...card.querySelectorAll('.qoptions .choicerow input:not(.qkey)')].map(i=>i.value),keys:[...card.querySelectorAll('.qoptions .qkey')].map(el=>el.checked),rows:[...card.querySelectorAll('.qstatements input')].map(i=>i.value),required:card.querySelector('.qrequired').checked,other:card.querySelector('.qother').checked,high:Number(card.querySelector('.qhigh').value)||5,lowLabel:card.querySelector('.qlow').value,highLabel:card.querySelector('.qhighlabel').value,points:Number(card.querySelector('.qpoints').value),correctText:card.querySelector('.qcorrect').value,yes:card.querySelector('.qyes').value,feedback:card.querySelector('.qfeedback').value}));
+  localStorage.setItem('eduvoice_draft_'+createKind,JSON.stringify({kind:createKind,title:$('formTitle').value,description:$('formDescription').value,mode:document.querySelector('input[name="pollmode"]:checked')?.value||'anonymous',quiz:!!FORMS[createKind].quiz,passcode:$('responsePasscode').value,questions}));
+}
+function restoreDraft(){
+  let raw=localStorage.getItem('eduvoice_draft_'+createKind);
+  if(!raw&&createKind==='survey')raw=localStorage.getItem('eduvoice_draft');
+  if(!raw)return false;
+  try{
+    let d=JSON.parse(raw);
+    if(d.kind&&d.kind!==createKind)return false;
+    if(!Array.isArray(d.questions)||!d.questions.length)return false;
+    let allowed=(FORMS[createKind]||FORMS.survey).types;
+    if(d.questions.some(q=>q?.type&&!allowed.includes(q.type)))return false;
+    $('formTitle').value=d.title||'';
+    $('formDescription').value=d.description||'';
+    let mode=d.mode==='named'?'named':'anonymous';
+    let radio=document.querySelector(`input[name="pollmode"][value="${mode}"]`);
+    if(radio)radio.checked=true;
+    $('quizMode').checked=!!(FORMS[createKind]||FORMS.survey).quiz;
+    $('responsePasscode').value=(d.passcode||'').replace(/\D/g,'').slice(0,4);
+    $('questionList').innerHTML='';
+    d.questions.forEach(q=>addQuestionCard(q));
+    return true;
+  }catch(e){return false}
+}
+function rememberHost(code,value){sessionStorage.setItem('eduvoice_host_'+code,value);localStorage.setItem('eduvoice_host_'+code,value)}
+function hostToken(code){return sessionStorage.getItem('eduvoice_host_'+code)||localStorage.getItem('eduvoice_host_'+code)||''}
+function failCreate(input,message){
+  if(input){
+    input.classList.add('invalid');
+    input.focus({preventScroll:true});
+    (input.closest('.choicerow')||input).after($('createError'));
+    input.scrollIntoView({block:'center'});
+  }
+  return message;
+}
+function validateCreate(){
+  document.querySelectorAll('#createForm .invalid').forEach(el=>el.classList.remove('invalid'));
+  $('launchbtn').before($('createError'));
+  let cards=[...$('questionList').children];
+  if(!cards.length)return say('Add a question.','បន្ថែមសំណួរ។');
+  if($('formTitle').value.trim().length>200)return failCreate($('formTitle'),say('Keep the form title within 200 characters.','ចំណងជើងត្រូវមានមិនលើស ២០០ តួអក្សរ។'));
+  let pin=$('responsePasscode').value.trim();
+  if(pin&&!/^\d{4}$/.test(pin))return failCreate($('responsePasscode'),say('Use a 4-digit passcode, or leave it blank.','ប្រើលេខសម្ងាត់ ៤ ខ្ទង់ ឬទុកឱ្យទទេ។'));
+  for(let card of cards){
+    let text=card.querySelector('.qtext');
+    if(text.value.trim().length<3)return failCreate(text,say('Write a question of at least 3 characters.','សរសេរសំណួរយ៉ាងតិច ៣ តួអក្សរ។'));
+    let type=card.querySelector('.qtype').value;
+    if(type==='likert'){
+      let labels=[...card.querySelectorAll('.qoptions .choicerow input:not(.qkey)')];
+      let filled=labels.filter(i=>i.value.trim());
+      if(filled.length<3)return failCreate(labels.find(i=>!i.value.trim())||labels[0],say('Add at least three scale labels.','បន្ថែមយ៉ាងតិចបីស្លាកលើមាត្រដ្ឋាន។'));
+      if(filled.length>7)return failCreate(filled[7],say('Use no more than seven scale labels.','ប្រើស្លាកមាត្រដ្ឋានមិនលើសប្រាំពីរ។'));
+      let long=filled.find(i=>i.value.trim().length>40);
+      if(long)return failCreate(long,say('Keep each scale label within 40 characters.','ស្លាកនីមួយៗត្រូវមានមិនលើស ៤០ តួអក្សរ។'));
+      let seen=new Set();
+      for(let input of filled){let key=input.value.trim().toLowerCase();if(seen.has(key))return failCreate(input,say('Two labels use the same wording.','មានស្លាកដូចគ្នា។'));seen.add(key)}
+      let stmts=[...card.querySelectorAll('.qstatements input')];
+      let stated=stmts.filter(i=>i.value.trim());
+      if(!stated.length)return failCreate(stmts[0],say('Add a statement to rate.','បន្ថែមសេចក្តីថ្លែងដើម្បីវាយតម្លៃ។'));
+      if(stated.length>10)return failCreate(stated[10],say('Use no more than ten statements.','ប្រើសេចក្តីថ្លែងមិនលើសដប់។'));
+      let tooLong=stated.find(i=>i.value.trim().length>200);
+      if(tooLong)return failCreate(tooLong,say('Keep each statement within 200 characters.','សេចក្តីថ្លែងនីមួយៗត្រូវមានមិនលើស ២០០ តួអក្សរ។'));
+      seen=new Set();
+      for(let input of stated){let key=input.value.trim().toLowerCase();if(seen.has(key))return failCreate(input,say('Two statements use the same wording.','មានសេចក្តីថ្លែងដូចគ្នា។'));seen.add(key)}
+      continue;
+    }
+    if($('quizMode').checked&&isChoice(type)){
+      let blank=[...card.querySelectorAll('.qoptions .choicerow')].find(row=>row.querySelector('.qkey').checked&&!row.querySelector('input:not(.qkey)').value.trim());
+      if(blank)return failCreate(blank.querySelector('input:not(.qkey)'),say('Write the choice marked as correct.','សរសេរជម្រើសដែលបានសម្គាល់ថាត្រឹមត្រូវ។'));
+    }
+    if(!isChoice(type))continue;
+    let inputs=[...card.querySelectorAll('.qoptions .choicerow input:not(.qkey)')];
+    if(inputs.filter(i=>i.value.trim()).length<2)return failCreate(inputs.find(i=>!i.value.trim())||inputs[0],say('Add at least two options.','បន្ថែមយ៉ាងតិចពីរជម្រើស។'));
+    let long=inputs.find(i=>i.value.trim().length>160);
+    if(long)return failCreate(long,say('Keep each option within 160 characters.','ជម្រើសនីមួយៗត្រូវមានមិនលើស ១៦០ តួអក្សរ។'));
+    let seen=new Set();
+    for(let input of inputs){
+      let key=input.value.trim().toLowerCase();
+      if(!key)continue;
+      if(seen.has(key))return failCreate(input,say('Two options use the same wording. Make each option different.','មានជម្រើសដូចគ្នា។ សរសេរជម្រើសនីមួយៗឱ្យខុសគ្នា។'));
+      seen.add(key);
+    }
+  }
+  if($('quizMode').checked&&!readQuestions().some(q=>q.correct!=null&&!(Array.isArray(q.correct)&&!q.correct.length)&&q.points>0&&q.type!=='likert'&&q.type!=='scale'&&q.type!=='voice'))return say('Mark the correct answer on at least one question.','សម្គាល់ចម្លើយត្រឹមត្រូវយ៉ាងតិចមួយសំណួរ។');
+  return '';
+}
+async function create(){
+  let err=$('createError');
+  err.textContent='';
+  let problem=validateCreate();
+  if(problem){err.textContent=problem;return}
+  let btn=$('launchbtn');
+  btn.disabled=true;
+  try{
+    let questions=readQuestions().map(q=>({type:q.type,text:q.text,options:(isChoice(q.type)||q.type==='likert')?q.options:[],rows:q.type==='likert'?q.rows:[],required:q.required,other:q.other,high:q.high,lowLabel:q.lowLabel,highLabel:q.highLabel,points:q.points,correct:q.correct,feedback:q.feedback}));
+    let mode=document.querySelector('input[name="pollmode"]:checked').value;
+    let pin=$('responsePasscode').value.trim();
+    let r=await api('/api/sessions',{method:'POST',body:JSON.stringify({title:$('formTitle').value.trim(),description:$('formDescription').value.trim(),questions,mode,quiz:createKind==='test',kind:createKind,passcode:pin})});
+    if(/^\d{4}$/.test(pin))sessionStorage.setItem('eduvoice_pass_'+r.code,pin);
+    current=await api('/api/sessions/'+r.code);
+    token=r.token;
+    rememberHost(r.code,token);
+    history.replaceState({},'','?host='+r.code);
+    show('lecturer');
+    localStorage.removeItem('eduvoice_draft_'+createKind);
+    localStorage.removeItem('eduvoice_draft');
+    resetCreate(createKind);
+    render(current);
+    connect(r.code);
+  }catch(e){err.textContent=e.message}
+  finally{btn.disabled=false}
+}
+async function join(){let code=$('joincode').value.trim().toUpperCase();$('joinError').textContent='';try{current=await api('/api/sessions/'+code);history.replaceState({},'','?join='+code);show('student');render(current);return}catch(e){if(!/not found/i.test(e.message)){$('joinError').textContent=e.message;return}}try{await api('/api/battles/'+code);history.replaceState({},'','?play='+code);await openBattlePlay(code)}catch(e){$('joinError').textContent=say('No session uses that code.','រកមិនឃើញវគ្គដែលប្រើកូដនេះ។')}}
 function participant(code){let key='eduvoice_participant_'+code;let id=localStorage.getItem(key);if(!id){id=crypto.randomUUID();localStorage.setItem(key,id)}return id}
-async function vote(){try{let selected=document.querySelector('input[name="choice"]:checked');if(!selected)throw Error(lang==='km'?'សូមជ្រើសរើសចម្លើយ':'Select an answer');let name=$('studentName').value.trim();await api('/api/sessions/'+current.code+'/vote',{method:'POST',body:JSON.stringify({participant:participant(current.code),choice:Number(selected.value),name})});localStorage.setItem('eduvoice_voted_'+current.code,'yes');$('studentMessage').className='success';$('studentMessage').textContent=lang==='km'?'បានដាក់ស្នើចម្លើយរួចរាល់។':'Response submitted successfully.';render(current)}catch(e){$('studentMessage').className='error';$('studentMessage').textContent=e.message}}
+function questionsOf(s){return s.questions&&s.questions.length?s.questions:[{type:'single',text:s.question,options:s.options||[],counts:s.counts||[]}]}
+function otherName(){return say('Other','ផ្សេងទៀត')}
+function shownAnswer(q,a){
+  if(a==null||a==='')return '';
+  if(q.type==='yesno')return a===0?say('Yes','បាទ/ចាស'):say('No','ទេ');
+  if(q.type==='scale')return a+' / '+(q.high||5);
+  if(q.type==='likert'&&Array.isArray(a)){
+    let rows=q.rows||[];
+    return a.map((n,i)=>q.options?.[n]?((rows.length>1&&rows[i])?rows[i]+': '+q.options[n]:q.options[n]):'').filter(Boolean).join('; ');
+  }
+  if(q.type==='voice')return a?say('Voice recording','ចម្លើយសំឡេង'):'';
+  if(q.type==='short'||q.type==='paragraph'||q.type==='text')return String(a);
+  if((q.type==='single'||q.type==='dropdown')&&a&&typeof a==='object')return otherName()+': '+a.other;
+  if(q.type==='single'||q.type==='dropdown')return q.options?.[a]||'';
+  if(q.type==='multi'&&Array.isArray(a))return a.map(i=>q.options?.[i]).filter(Boolean).join(', ');
+  if(q.type==='multi'&&a&&typeof a==='object'){
+    let parts=(a.choices||[]).map(i=>q.options?.[i]).filter(Boolean);
+    if(a.other)parts.push(otherName()+': '+a.other);
+    return parts.join(', ');
+  }
+  return '';
+}
+function miss(block){block.scrollIntoView({block:'center'});throw Error(say('Answer every required question.','ឆ្លើយសំណួរដែលចាំបាច់ទាំងអស់។'))}
+function collectAnswers(){
+  let qs=questionsOf(current),answers=[];
+  for(let i=0;i<qs.length;i++){
+    let block=document.querySelector(`#studentChoices .qblock[data-index="${i}"]`);
+    let q=qs[i],required=q.required!==false;
+    if(q.type==='short'||q.type==='paragraph'||q.type==='text'){
+      let field=block.querySelector('.answer-text'),text=field.value.trim(),limit=q.type==='paragraph'?2000:q.type==='short'?300:1000;
+      if(!text){if(required){field.focus();miss(block)}answers.push(null);continue}
+      if(text.length>limit){field.focus();throw Error(say('A written answer is too long.','ចម្លើយសរសេរវែងពេក។'))}
+      answers.push(text);
+    }else if(q.type==='dropdown'){
+      let v=block.querySelector('select').value;
+      if(v===''){if(required)miss(block);answers.push(null)}else answers.push(Number(v));
+    }else if(q.type==='multi'){
+      let picked=[...block.querySelectorAll('input:checked')].map(el=>el.value);
+      let choices=picked.filter(v=>v!=='other').map(Number);
+      let other=picked.includes('other')?(block.querySelector('.other-text')?.value.trim()||''):'';
+      if(picked.includes('other')&&!other){block.querySelector('.other-text').focus();throw Error(say('Write the other answer.','សរសេរចម្លើយផ្សេងទៀត។'))}
+      if(required&&!choices.length&&!other)miss(block);
+      answers.push(other?{choices,other}:choices);
+    }else if(q.type==='likert'){
+      let rows=q.rows?.length?q.rows:[];
+      let vals=rows.map((_,r)=>{let sel=block.querySelector(`input[name="q${i}r${r}"]:checked`);return sel?Number(sel.value):null});
+      if(required&&vals.some(v=>v==null))miss(block);
+      answers.push(vals.every(v=>v==null)?null:vals);
+    }else if(q.type==='voice'){
+      if(!block._voiceBlob){if(required)miss(block);answers.push(null);continue}
+      if(block._voiceBlob.size>1200000){throw Error(say('The voice recording is too long. Record a shorter answer.','សំឡេងវែងពេក។ សូមថតឱ្យខ្លីជាងនេះ។'))}
+      answers.push(block._voiceBlob);
+    }else if(q.type==='scale'||q.type==='yesno'||q.type==='single'){
+      let sel=block.querySelector('input:checked');
+      if(!sel){if(required)miss(block);answers.push(null);continue}
+      if(sel.value==='other'){
+        let other=block.querySelector('.other-text').value.trim();
+        if(!other){block.querySelector('.other-text').focus();throw Error(say('Write the other answer.','សរសេរចម្លើយផ្សេងទៀត។'))}
+        answers.push({other});
+      }else answers.push(Number(sel.value));
+    }
+  }
+  return answers;
+}
+function blobPayload(blob){return new Promise((resolve,reject)=>{let reader=new FileReader();reader.onload=()=>{let text=String(reader.result||'');resolve({audio:text.slice(text.indexOf(',')+1),mime:(blob.type||'audio/webm').split(';')[0]})};reader.onerror=()=>reject(Error(say('The voice recording could not be read.','មិនអាចអានសំឡេងបាន។')));reader.readAsDataURL(blob)})}
+async function vote(){try{if(current.mode==='named'&&!$('studentName').value.trim()){$('studentName').focus();throw Error(lang==='km'?'សូមបញ្ចូលឈ្មោះ។':'Enter your name.')}let answers=collectAnswers();for(let i=0;i<answers.length;i++){if(answers[i] instanceof Blob)answers[i]=await blobPayload(answers[i])}let name=$('studentName').value.trim();let res=await api('/api/sessions/'+current.code+'/vote',{method:'POST',body:JSON.stringify({participant:participant(current.code),answers,name})});localStorage.setItem('eduvoice_voted_'+current.code,'yes');gradeReview=res.quiz?{...res,code:current.code}:null;render(current)}catch(e){$('studentMessage').className='error';$('studentMessage').textContent=e.message}}
 function escapeHTML(x){return String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function results(s){return s.options.map((x,i)=>{let pct=s.total?Math.round(100*s.counts[i]/s.total):0;return `<div class="result"><div class="resulthead"><span>${escapeHTML(x)}</span><b>${s.counts[i]} · ${pct}%</b></div><div class="bar"><div class="fill" style="width:${pct}%"></div></div></div>`}).join('')}
-function render(s){current=s;let status=s.active?(lang==='km'?'កំពុងបើក':'Open'):(lang==='km'?'បានបិទ':'Closed');if(view==='student'){$('studentQuestion').textContent=s.question;$('studentMeta').textContent=s.mode==='anonymous'?'Anonymous / អនាមិក':'Identified / បង្ហាញឈ្មោះ';$('studentChoices').innerHTML=s.options.map((o,i)=>`<label class="choice"><input type="radio" name="choice" value="${i}"> ${escapeHTML(o)}</label>`).join('');$('nameWrap').classList.toggle('hidden',s.mode!=='named');let voted=localStorage.getItem('eduvoice_voted_'+s.code)==='yes';$('submitbtn').disabled=voted||!s.active;if(voted)$('studentMessage').textContent=lang==='km'?'បានដាក់ស្នើរួចហើយ':'You have already submitted';if(!s.active)$('studentMessage').textContent=lang==='km'?'ការស្ទង់មតិត្រូវបានបិទ':'Poll is closed'}if(view==='lecturer'){$('sessionCode').textContent='Session: '+s.code+' · '+status;$('sessionUrl').textContent=location.origin+'/?join='+s.code;$('qr').src='/api/sessions/'+s.code+'/qr';$('projectLink').href='/?project='+s.code;$('lecturerResults').innerHTML=`<h2>${escapeHTML(s.question)}</h2><p>${s.total} / ${s.capacity} responses · ${s.remaining} places remaining</p>`+results(s);$('closebtn').disabled=!s.active}if(view==='projection'){$('projectionMeta').textContent='EduVoice · '+s.code+' · '+status;$('projectionQuestion').textContent=s.question;$('projectionResults').innerHTML=results(s);$('projectionFoot').textContent=s.total+' / '+s.capacity+' responses · '+(s.mode==='anonymous'?'Anonymous':'Identified')}}
-function connect(code){if(view==='student')return;if(ws)ws.close();let proto=location.protocol==='https:'?'wss':'ws';ws=new WebSocket(proto+'://'+location.host+'/ws/'+code);ws.onmessage=e=>render(JSON.parse(e.data));ws.onclose=()=>{if(current?.code===code)setTimeout(()=>connect(code),2500)}}
-function copyLink(){navigator.clipboard.writeText(location.origin+'/?join='+current.code).then(()=>alert('Link copied')).catch(()=>prompt('Copy link:',location.origin+'/?join='+current.code))}
-function exportCSV(){location.href='/api/sessions/'+current.code+'/export?token='+encodeURIComponent(token)}
-async function closePoll(){if(!confirm('Close this poll?'))return;await api('/api/sessions/'+current.code+'/close?token='+encodeURIComponent(token),{method:'POST'})}
-async function boot(){translate();let p=new URLSearchParams(location.search),code=p.get('join')||p.get('project')||p.get('host');if(!code)return;try{current=await api('/api/sessions/'+code);if(p.has('join'))show('student');else if(p.has('project'))show('projection');else{token=sessionStorage.getItem('eduvoice_host_'+code);if(!token)throw Error('Lecturer access is only available in the original browser tab');show('lecturer')}render(current);if(!p.has('join'))connect(code)}catch(e){show('welcome');alert(e.message)}}boot();
-</script></body></html>
+function tally(s){return lang==='km'?`${s.total} / ${s.capacity} ចម្លើយ។ នៅសល់ ${s.remaining} កន្លែង។`:`${s.total} of ${s.capacity} responses. ${s.remaining} places remaining.`}
+function bars(labels,counts,total){return labels.map((x,i)=>{let n=counts?.[i]||0;let pct=total?Math.round(100*n/total):0;return `<div class="result"><div class="resulthead"><span>${escapeHTML(x)}</span><b>${n} <span class="pct">${pct}%</span></b></div><div class="bar"><div class="fill" style="width:${pct}%"></div></div></div>`}).join('')}
+function resultLabels(q){
+  if(q.type==='yesno')return [say('Yes','បាទ/ចាស'),say('No','ទេ')];
+  if(q.type==='scale')return Array.from({length:q.high||5},(_,i)=>String(i+1));
+  let labels=[...(q.options||[])];
+  if(q.other)labels.push(otherName());
+  return labels;
+}
+function questionBlock(q,total,compact){
+  let star=q.required!==false?' <span class="req">*</span>':'';
+  let quizLine=q.graded?`<p class="tally">${escapeHTML(say('Correct ','ត្រឹមត្រូវ '))}${q.correctCount||0} / ${total} · ${q.points} ${escapeHTML(say('points','ពិន្ទុ'))}</p>`:'';
+  let title=`<h2 class="question">${escapeHTML(q.text)}${star}</h2><p class="muted">${escapeHTML(typeName(q.type))}</p>${quizLine}`;
+  if(q.type==='voice'){
+    if(current?.locked&&current?.revealed===false)return `<section class="qblock">${title}<p class="muted">${escapeHTML(say('Locked until the passcode is entered.','ចាក់សោរហូតដល់បញ្ចូលលេខសម្ងាត់។'))}</p></section>`;
+    let n=q.count||0;
+    return `<section class="qblock">${title}<p class="tally">${escapeHTML(say(n+(n===1?' voice answer':' voice answers'),n+' ចម្លើយសំឡេង'))}</p></section>`;
+  }
+  if(q.type==='text'||q.type==='short'||q.type==='paragraph'){
+    if(current?.locked&&current?.revealed===false)return `<section class="qblock">${title}<p class="muted">${escapeHTML(say('Locked until the passcode is entered.','ចាក់សោរហូតដល់បញ្ចូលលេខសម្ងាត់។'))}</p></section>`;
+    let texts=q.texts||[];
+    let body=compact?`<p class="tally">${texts.length}</p>`:(texts.length?`<ul class="written">${texts.map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ul>`:`<p class="muted">${say('No written answers yet.','មិនទាន់មានចម្លើយសរសេរ។')}</p>`);
+    return `<section class="qblock">${title}${body}</section>`;
+  }
+  if(q.type==='scale'){
+    let high=q.high||5;
+    let avg=q.average==null?say('No responses yet.','មិនទាន់មានចម្លើយ។'):say('Average ','មធ្យម ')+q.average+' / '+high;
+    let ends=`<p class="muted">${escapeHTML(q.lowLabel||'1')} – ${escapeHTML(q.highLabel||String(high))}</p>`;
+    return `<section class="qblock">${title}<p class="tally">${avg}</p>${ends}${bars(resultLabels(q),q.counts,total)}</section>`;
+  }
+  if(q.type==='likert'){
+    let rows=q.rows?.length?q.rows:[q.text];
+    let labels=q.options||[];
+    let body=rows.map((row,r)=>{
+      let counts=Array.isArray(q.counts?.[r])?q.counts[r]:[];
+      let avg=q.averages?q.averages[r]:null;
+      let head=rows.length>1||row!==q.text?`<p class="question">${escapeHTML(row)}</p>`:'';
+      let avgText=avg==null?'':`<p class="muted">${escapeHTML(say('Average ','មធ្យម '))}${avg} / ${labels.length}</p>`;
+      return head+avgText+bars(labels,counts,total);
+    }).join('');
+    return `<section class="qblock">${title}${body}</section>`;
+  }
+  let extra=!compact&&q.otherTexts?.length?`<ul class="written">${q.otherTexts.map(x=>`<li>${escapeHTML(otherName()+': '+x)}</li>`).join('')}</ul>`:'';
+  return `<section class="qblock">${title}${bars(resultLabels(q),q.counts,total)}${extra}</section>`;
+}
+function studentField(q,i,draft){
+  let ph=escapeHTML(say('Your answer','ចម្លើយរបស់អ្នក'));
+  if(q.type==='short'||q.type==='text')return `<input class="answer-text" maxlength="300" placeholder="${ph}" value="${escapeHTML(draft?.text||'')}">`;
+  if(q.type==='paragraph')return `<textarea class="answer-text" maxlength="2000" placeholder="${ph}">${escapeHTML(draft?.text||'')}</textarea>`;
+  if(q.type==='voice')return `<div class="voicebox"><button type="button" class="secondary recordbtn"><span class="dot" aria-hidden="true"></span><span class="recordlabel">${escapeHTML(say('Record','ថតសំឡេង'))}</span></button><span class="voicetime">0:00</span><audio class="hidden" controls></audio><button type="button" class="secondary rerecord hidden">${escapeHTML(say('Record again','ថតម្តងទៀត'))}</button><p class="help voicestatus"></p><p class="help">${escapeHTML(say('Up to 60 seconds. You can listen before submitting.','រហូតដល់ ៦០ វិនាទី។ អាចស្តាប់មុនដាក់ស្នើ។'))}</p></div>`;
+  if(q.type==='dropdown'){
+    let opts=`<option value="">${escapeHTML(say('Choose','ជ្រើស'))}</option>`+(q.options||[]).map((o,n)=>`<option value="${n}"${draft?.select===String(n)?' selected':''}>${escapeHTML(o)}</option>`).join('');
+    return `<select class="answer-select">${opts}</select>`;
+  }
+  if(q.type==='scale'){
+    let high=q.high||5;
+    return `<div class="scale"><span class="muted">${escapeHTML(q.lowLabel||'')}</span>${Array.from({length:high},(_,n)=>n+1).map(n=>`<label class="choice"><input type="radio" name="q${i}" value="${n}"${draft?.checks?.includes(String(n))?' checked':''}> ${n}</label>`).join('')}<span class="muted">${escapeHTML(q.highLabel||'')}</span></div>`;
+  }
+  if(q.type==='likert'){
+    let rows=q.rows?.length?q.rows:[];
+    let labels=q.options||[];
+    let picked=name=>draft?.likert?.includes(name);
+    if(rows.length<=1){
+      let stmt=rows[0]&&rows[0]!==q.text?`<p>${escapeHTML(rows[0])}</p>`:'';
+      return stmt+`<div class="likert">${labels.map((o,n)=>`<label class="choice"><input type="radio" name="q${i}r0" value="${n}"${picked('q'+i+'r0='+n)?' checked':''}> ${escapeHTML(o)}</label>`).join('')}</div>`;
+    }
+    return `<div class="tablewrap"><table class="likert-table"><thead><tr><th></th>${labels.map(o=>`<th>${escapeHTML(o)}</th>`).join('')}</tr></thead><tbody>${rows.map((row,r)=>`<tr><td class="stmt">${escapeHTML(row)}</td>${labels.map((o,n)=>`<td><input type="radio" name="q${i}r${r}" value="${n}" aria-label="${escapeHTML(row+' '+o)}"${picked('q'+i+'r'+r+'='+n)?' checked':''}></td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  }
+  let labels=q.type==='yesno'?[[0,say('Yes','បាទ/ចាស')],[1,say('No','ទេ')]]:(q.options||[]).map((o,n)=>[n,o]);
+  let kind=q.type==='multi'?'checkbox':'radio';
+  let html=labels.map(([n,o])=>`<label class="choice"><input type="${kind}" name="q${i}" value="${n}"${draft?.checks?.includes(String(n))?' checked':''}> ${escapeHTML(o)}</label>`).join('');
+  if(q.other)html+=`<label class="choice"><input type="${kind}" name="q${i}" value="other"${draft?.checks?.includes('other')?' checked':''}> ${escapeHTML(otherName())}</label><input class="other-text" maxlength="160" placeholder="${escapeHTML(otherName())}" value="${escapeHTML(draft?.other||'')}">`;
+  return html;
+}
+function render(s){
+  if(view==='lecturer'&&s.locked&&s.revealed===false&&current?.code===s.code&&Array.isArray(current.responses)&&savedPass(s.code)){
+    if(ws&&ws.readyState===1)ws.send(JSON.stringify({passcode:savedPass(s.code)}));
+    return;
+  }
+  current=s;
+  let status=s.active?(lang==='km'?'កំពុងបើក':'Open'):(lang==='km'?'បានបិទ':'Closed');
+  let qs=questionsOf(s);
+  if(view==='student'){
+    let draft=[...document.querySelectorAll('#studentChoices .qblock')].map(block=>({checks:[...block.querySelectorAll('input:checked')].map(i=>i.value),text:block.querySelector('.answer-text')?.value||'',other:block.querySelector('.other-text')?.value||'',select:block.querySelector('select')?.value||'',likert:[...block.querySelectorAll('input:checked')].map(el=>el.name+'='+el.value)}));
+    if(draft.length!==qs.length)draft=[];
+    $('studentTitle').textContent=s.title||formText(sessionKind(s),'fallback');
+    $('studentDesc').textContent=s.description||'';
+    $('studentDesc').classList.toggle('hidden',!s.description);
+    $('submitbtn').textContent=formText(sessionKind(s),'submit');
+    $('studentMeta').textContent=kindName(sessionKind(s))+' · '+(s.mode==='anonymous'?(lang==='km'?'អនាមិក':'Anonymous'):(lang==='km'?'ត្រូវបញ្ចូលឈ្មោះ':'Name required'))+(qs.length>1?(lang==='km'?` · ${qs.length} សំណួរ`:` · ${qs.length} questions`):'');
+    $('studentChoices').innerHTML=qs.map((q,i)=>`<article class="qblock" data-index="${i}"><h2 class="question">${i+1}. ${escapeHTML(q.text)}${q.required!==false?' <span class="req">*</span>':''}</h2><p class="muted">${escapeHTML(typeName(q.type))}</p>${studentField(q,i,draft[i])}</article>`).join('');
+    $('nameWrap').classList.toggle('hidden',s.mode!=='named');
+    let voted=localStorage.getItem('eduvoice_voted_'+s.code)==='yes';
+    $('submitbtn').disabled=voted||!s.active;
+    document.querySelectorAll('#studentChoices input,#studentChoices textarea,#studentChoices select,#studentChoices button,#studentName').forEach(el=>{el.disabled=voted||!s.active});
+    wireVoices();
+    $('studentMessage').className=voted&&s.active?'success':'';
+    $('gradeBox').classList.add('hidden');
+    if(voted)$('studentMessage').textContent=lang==='km'?'បានកត់ត្រាចម្លើយរួចហើយ។':'Your response is recorded.';
+    if(voted&&s.quiz){
+      if(gradeReview&&gradeReview.code===s.code)paintGrade(gradeReview);
+      else api('/api/sessions/'+s.code+'/result?participant='+encodeURIComponent(participant(s.code))).then(g=>{gradeReview={...g,code:s.code};if(view==='student'&&current?.code===s.code)paintGrade(gradeReview)}).catch(()=>{});
+    }
+    if(!s.active){$('studentMessage').className='';$('studentMessage').textContent=formText(sessionKind(s),'closed')}
+    watchStudent(s.code);
+  }
+  if(view==='lecturer'){
+    $('sessionCode').textContent=s.code;
+    $('sessionState').textContent=kindName(sessionKind(s))+' · '+status;
+    $('sessionState').dataset.open=s.active?'yes':'no';
+    $('sessionUrl').textContent=location.origin+'/?join='+s.code;
+    $('qr').src='/api/sessions/'+s.code+'/qr';
+    $('projectLink').href='/?project='+s.code;
+    let heading=s.title?`<h2 class="question">${escapeHTML(s.title)}</h2>`+(s.description?`<p class="help">${escapeHTML(s.description)}</p>`:''):'';
+    let sheet=Array.isArray(s.responses)?`<h2 class="sheethead">${escapeHTML(say('Responses','ចម្លើយ'))}</h2>`+sheetBlock(s):(s.locked?deskLockForm():'');
+    $('lecturerResults').innerHTML=heading+`<p class="tally">${tally(s)}</p>`+scoreLine(s)+`<h2 class="sheethead">${say('Summary','សង្ខេប')}</h2>`+qs.map(q=>questionBlock(q,s.total,false)).join('')+sheet;
+    let deskBtn=$('deskLockBtn');
+    if(deskBtn)deskBtn.onclick=()=>submitDeskLock(s.code);
+    $('closebtn').disabled=false;
+    $('closebtn').textContent=s.active?formText(sessionKind(s),'close'):say('Reopen','បើកវិញ');
+    if(!Array.isArray(s.responses)){
+      let pass=savedPass(s.code);
+      if(s.locked&&!pass)return;
+      api('/api/sessions/'+s.code+'/responses'+(pass?'?passcode='+encodeURIComponent(pass):'')).then(full=>{
+        if(view==='lecturer'&&current?.code===s.code&&(!Array.isArray(current.responses)||current.responses.length<full.responses.length||current.total!==full.total))render({...s,...full,remaining:full.remaining??s.remaining});
+      }).catch(e=>{
+        if(!isLockError(e.message))return;
+        sessionStorage.removeItem('eduvoice_pass_'+s.code);
+        if(view==='lecturer'&&current?.code===s.code)render({...s,responses:null,revealed:false});
+      });
+    }
+  }
+  if(view==='projection'){
+    $('projectionMeta').textContent=kindName(sessionKind(s))+'  '+s.code+'  '+(s.mode==='anonymous'?(lang==='km'?'អនាមិក':'Anonymous'):(lang==='km'?'ត្រូវបញ្ចូលឈ្មោះ':'Name required'));
+    $('projectionQuestion').textContent=s.title||(qs.length===1?qs[0].text:say(qs.length+' questions',qs.length+' សំណួរ'));
+    $('projectionResults').innerHTML=(qs.length===1&&!s.title?questionBlock({...qs[0],text:''},s.total,true).replace('<h2 class="question"></h2>',''):qs.map(q=>questionBlock(q,s.total,true)).join(''));
+    $('projectionFoot').textContent=tally(s)+'  '+status;
+  }
+}
+function when(unix){return new Date(unix*1000).toLocaleString(lang==='km'?'km':'en-GB',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}
+function modeName(mode){return mode==='anonymous'?(lang==='km'?'អនាមិក':'Anonymous'):(lang==='km'?'ត្រូវបញ្ចូលឈ្មោះ':'Name required')}
+function statusName(active){return active?(lang==='km'?'កំពុងបើក':'Open'):(lang==='km'?'បានបិទ':'Closed')}
+function table(headers,rows){return `<div class="tablewrap"><table><thead><tr>${headers.map(h=>`<th>${escapeHTML(h)}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${headers.length}">${escapeHTML(lang==='km'?'មិនទាន់មានទិន្នន័យ។':'No records yet.')}</td></tr>`}</tbody></table></div>`}
+function watchStudent(code){
+  if(studentTimer)return;
+  studentTimer=setInterval(async()=>{
+    if(view!=='student'||current?.code!==code)return;
+    try{let s=await api('/api/sessions/'+code);if(!!s.active!==!!current.active)render(s)}catch(e){}
+  },4000);
+}
+function savedPass(code){return sessionStorage.getItem('eduvoice_pass_'+code)||''}
+function digitsOnly(el){el.value=el.value.replace(/\D/g,'').slice(0,4)}
+function isLockError(message){return message==='Enter the response passcode'||message==='Incorrect passcode'||message==='Too many attempts. Wait a few minutes.'||message==='Use a 4-digit passcode'}
+function lockText(message){
+  if(message==='Incorrect passcode')return say('Incorrect passcode.','លេខសម្ងាត់មិនត្រឹមត្រូវ។');
+  if(message==='Too many attempts. Wait a few minutes.')return say('Too many attempts. Wait a few minutes.','ព្យាយាមច្រើនដងពេក។ សូមរង់ចាំបន្តិច។');
+  if(message==='Use a 4-digit passcode')return say('Use a 4-digit passcode.','ប្រើលេខសម្ងាត់ ៤ ខ្ទង់។');
+  return say('Enter the 4-digit passcode.','បញ្ចូលលេខសម្ងាត់ ៤ ខ្ទង់។');
+}
+function deskLockForm(){
+  return `<div class="panel" id="deskLock"><h2 class="sheethead">${escapeHTML(say('Responses are locked','ចម្លើយត្រូវបានចាក់សោ'))}</h2><p class="help">${escapeHTML(say('Enter the 4-digit passcode to see each response.','បញ្ចូលលេខសម្ងាត់ ៤ ខ្ទង់ដើម្បីមើលចម្លើយនីមួយៗ។'))}</p><input class="passcode" id="deskLockCode" type="password" inputmode="numeric" maxlength="4" autocomplete="off" oninput="this.value=this.value.replace(/\\D/g,'').slice(0,4)"><div class="actions"><button type="button" id="deskLockBtn">${escapeHTML(say('See responses','មើលចម្លើយ'))}</button></div><p id="deskLockError" class="error"></p></div>`;
+}
+async function submitDeskLock(code){
+  let pin=($('deskLockCode')?.value||'').replace(/\D/g,'');
+  if(!/^\d{4}$/.test(pin)){$('deskLockError').textContent=lockText('Use a 4-digit passcode');return}
+  try{
+    let full=await api('/api/sessions/'+code+'/responses?passcode='+encodeURIComponent(pin));
+    sessionStorage.setItem('eduvoice_pass_'+code,pin);
+    if(ws&&ws.readyState===1)ws.send(JSON.stringify({passcode:pin}));
+    if(view==='lecturer'&&current?.code===code)render({...current,...full,remaining:full.remaining??current.remaining});
+  }catch(e){$('deskLockError').textContent=isLockError(e.message)?lockText(e.message):e.message}
+}
+async function saveDeskPass(clear){
+  if(!current||!token)return;
+  let pin=clear?'':$('deskPass').value.replace(/\D/g,'');
+  if(!clear&&!/^\d{4}$/.test(pin)){$('passState').textContent=lockText('Use a 4-digit passcode');return}
+  try{
+    await api('/api/sessions/'+current.code+'/passcode?token='+encodeURIComponent(token),{method:'POST',body:JSON.stringify({passcode:pin})});
+    if(clear)sessionStorage.removeItem('eduvoice_pass_'+current.code);
+    else sessionStorage.setItem('eduvoice_pass_'+current.code,pin);
+    $('deskPass').value='';
+    $('passState').textContent=clear?say('Passcode removed. Responses are open.','បានដកលេខសម្ងាត់។ ចម្លើយបើកហើយ។'):say('Passcode saved.','បានរក្សាលេខសម្ងាត់។');
+    if(ws&&ws.readyState===1&&pin)ws.send(JSON.stringify({passcode:pin}));
+    let path='/api/sessions/'+current.code+(pin?'/responses?passcode='+encodeURIComponent(pin):'');
+    render(await api(path));
+  }catch(e){$('passState').textContent=isLockError(e.message)?lockText(e.message):e.message}
+}
+function showRecordPane(pane){
+  recordPane=pane==='summary'?'summary':'sheet';
+  $('recordSummary').classList.toggle('hidden',recordPane!=='summary');
+  $('recordSheet').classList.toggle('hidden',recordPane!=='sheet');
+  $('recordSwitch').classList.remove('hidden');
+  $('recordTabSheet').setAttribute('aria-pressed',recordPane==='sheet'?'true':'false');
+  $('recordTabSummary').setAttribute('aria-pressed',recordPane==='summary'?'true':'false');
+}
+function applySheetFilter(){
+  let q=($('sheetSearch').value||'').trim().toLowerCase();
+  document.querySelectorAll('#responseTable tbody tr').forEach(tr=>{
+    if(tr.classList.contains('emptyrow'))return;
+    tr.hidden=!!q&&!tr.textContent.toLowerCase().includes(q);
+  });
+}
+function showResponse(number){
+  if(current?.battle){showBattleResponse(number);return}
+  let box=$('recordOne');
+  let r=(current?.responses||[]).find(x=>x.number===number);
+  document.querySelectorAll('#responseTable tbody tr').forEach(tr=>tr.classList.toggle('picked',Number(tr.dataset.n)===number&&!!r));
+  if(!r){recordOpenN=0;box.classList.add('hidden');box.innerHTML='';return}
+  recordOpenN=number;
+  let qs=questionsOf(current);
+  let who=current.mode==='named'?`<p>${escapeHTML(r.name||say('Not collected','មិនបានប្រមូល'))}</p>`:'';
+  let score=current.quiz?`<p class="muted">${escapeHTML(say('Score','ពិន្ទុ'))} ${r.score??0} / ${r.max??0}</p>`:'';
+  let items=qs.map((q,i)=>{
+    let answer=answerCell(current.code,q,(r.answers||[])[i]);
+    return `<div class="oneitem"><span>${escapeHTML(say('Question ','សំណួរ '))}${i+1} · ${escapeHTML(typeName(q.type))}</span><b>${escapeHTML(q.text)}</b><p>${answer||escapeHTML(say('No answer','មិនមានចម្លើយ'))}</p></div>`;
+  }).join('');
+  box.classList.remove('hidden');
+  box.innerHTML=`<div class="onehead"><b>${escapeHTML(say('Response ','ចម្លើយ '))}${r.number}</b><span class="muted">${escapeHTML(when(r.created))}</span><button type="button" class="secondary" id="closeOne">${escapeHTML(say('Close','បិទ'))}</button></div>${who}${score}${items}`;
+  $('closeOne').onclick=()=>showResponse(0);
+}
+function showGate(s,message){
+  $('lockBox').classList.remove('hidden');
+  $('sheetLink').classList.add('hidden');
+  $('recordSwitch').classList.add('hidden');
+  $('recordSummary').classList.add('hidden');
+  $('recordSheet').classList.add('hidden');
+  $('recordSummary').innerHTML='';
+  $('responseTable').innerHTML='';
+  $('recordOne').classList.add('hidden');
+  $('recordFacts').innerHTML='';
+  $('recordTitle').textContent=s.title||s.question||s.code||'';
+  $('recordDesc').textContent=s.description||'';
+  $('recordDesc').classList.toggle('hidden',!s.description);
+  $('lockError').textContent=message||'';
+  $('lockCode').focus();
+}
+function scoreLine(s){
+  if(!s.quiz||(s.locked&&s.revealed===false))return '';
+  let text=s.averageScore==null?say('Scored','គិតពិន្ទុ'):say('Average score ','ពិន្ទុមធ្យម ')+s.averageScore+' / '+(s.maxScore??0);
+  return `<p class="tally">${escapeHTML(text)}</p>`;
+}
+function paintGrade(g){
+  let box=$('gradeBox');
+  if(!g?.quiz){box.classList.add('hidden');return}
+  let lines=(g.review||[]).filter(r=>r.graded).map(r=>{
+    let mark=r.correct?say('Correct','ត្រឹមត្រូវ'):say('Not correct','មិនត្រឹមត្រូវ');
+    let exp=r.expected?`<p class="muted">${escapeHTML(say('Answer: ','ចម្លើយ៖ '))}${escapeHTML(r.expected)}</p>`:'';
+    let fb=r.feedback?`<p class="help">${escapeHTML(r.feedback)}</p>`:'';
+    return `<div class="review ${r.correct?'success':'error'}"><b>${r.index+1}. ${escapeHTML(mark)}</b> <span>${r.earned} / ${r.points}</span>${exp}${fb}</div>`;
+  }).join('');
+  box.classList.remove('hidden');
+  box.innerHTML=`<p class="score">${g.score} / ${g.max}</p><p>${escapeHTML(say('Your score','ពិន្ទុរបស់អ្នក'))}</p>${lines}`;
+}
+function liveMark(){return ws&&ws.readyState===1?`<span class="livemark">${escapeHTML(say('Live','ផ្ទាល់'))}</span>`:''}
+function answerCell(code,q,a){
+  if(q.type==='voice'){
+    if(!a||typeof a!=='string')return '';
+    let pass=savedPass(code);
+    let src='/api/sessions/'+encodeURIComponent(code)+'/voice/'+encodeURIComponent(a)+(pass?'?passcode='+encodeURIComponent(pass):'');
+    return `<audio controls preload="none" src="${src}"></audio>`;
+  }
+  return escapeHTML(shownAnswer(q,a));
+}
+function wireVoices(){
+  document.querySelectorAll('#studentChoices .voicebox').forEach(box=>{
+    let block=box.closest('.qblock');
+    let btn=box.querySelector('.recordbtn');
+    let label=box.querySelector('.recordlabel');
+    let again=box.querySelector('.rerecord');
+    let audio=box.querySelector('audio');
+    let time=box.querySelector('.voicetime');
+    let status=box.querySelector('.voicestatus');
+    let rec=null,chunks=[],timer=null,started=0,url='';
+    function showTime(seconds){time.textContent=Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0')}
+    function stopRec(){if(rec&&rec.state==='recording')rec.stop()}
+    async function start(){
+      if(btn.disabled)return;
+      status.textContent='';
+      if(!navigator.mediaDevices?.getUserMedia||typeof MediaRecorder==='undefined'){status.textContent=say('This browser cannot record audio.','កម្មវិធីរុករកនេះមិនអាចថតសំឡេងបាន។');return}
+      let stream;
+      try{stream=await navigator.mediaDevices.getUserMedia({audio:true})}
+      catch(e){status.textContent=say('Allow the microphone to record.','សូមអនុញ្ញាតមីក្រូហ្វូនដើម្បីថតសំឡេង។');return}
+      let mime=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg'].find(t=>MediaRecorder.isTypeSupported(t))||'';
+      chunks=[];
+      try{rec=new MediaRecorder(stream,mime?{mimeType:mime,audioBitsPerSecond:24000}:{audioBitsPerSecond:24000})}
+      catch(e){stream.getTracks().forEach(t=>t.stop());status.textContent=say('This browser cannot record audio.','កម្មវិធីរុករកនេះមិនអាចថតសំឡេងបាន។');return}
+      rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+      rec.onstop=()=>{
+        stream.getTracks().forEach(t=>t.stop());
+        clearInterval(timer);
+        let blob=new Blob(chunks,{type:(rec.mimeType||mime||'audio/webm').split(';')[0]});
+        block._voiceBlob=blob;
+        if(url)URL.revokeObjectURL(url);
+        url=URL.createObjectURL(blob);
+        audio.src=url;
+        audio.classList.remove('hidden');
+        again.classList.remove('hidden');
+        btn.classList.add('hidden');
+        box.classList.remove('recording');
+        label.textContent=say('Record','ថតសំឡេង');
+      };
+      rec.start();
+      started=Date.now();
+      box.classList.add('recording');
+      label.textContent=say('Stop','បញ្ឈប់');
+      timer=setInterval(()=>{let seconds=Math.min(60,Math.floor((Date.now()-started)/1000));showTime(seconds);if(seconds>=60)stopRec()},250);
+    }
+    btn.addEventListener('click',()=>{if(box.classList.contains('recording'))stopRec();else start()});
+    again.addEventListener('click',()=>{
+      block._voiceBlob=null;
+      if(url){URL.revokeObjectURL(url);url=''}
+      audio.classList.add('hidden');
+      audio.removeAttribute('src');
+      again.classList.add('hidden');
+      btn.classList.remove('hidden');
+      label.textContent=say('Record','ថតសំឡេង');
+      showTime(0);
+      status.textContent='';
+    });
+  });
+}
+function sheetBlock(s){
+  let qs=questionsOf(s),named=s.mode==='named',blank=lang==='km'?'មិនបានប្រមូល':'Not collected';
+  let heads=`<th class="gutter"></th><th class="when">${escapeHTML(say('Timestamp','ពេលវេលា'))}</th>`+(named?`<th>${escapeHTML(say('Name','ឈ្មោះ'))}</th>`:'')+(s.quiz?`<th>${escapeHTML(say('Score','ពិន្ទុ'))}</th>`:'')+qs.map((q,i)=>`<th><span class="qnum">${escapeHTML(say('Question ','សំណួរ '))}${i+1}</span><span class="qtitle">${escapeHTML(q.text)}</span><span class="qtype">${escapeHTML(typeName(q.type))}</span></th>`).join('');
+  let rows=(s.responses||[]).map(r=>`<tr data-n="${r.number}"><td class="gutter">${r.number}</td><td class="when">${escapeHTML(when(r.created))}</td>`+(named?`<td>${escapeHTML(r.name||blank)}</td>`:'')+(s.quiz?`<td>${r.score??0} / ${r.max??0}</td>`:'')+qs.map((q,i)=>`<td>${answerCell(s.code,q,(r.answers||[])[i])}</td>`).join('')+`</tr>`).join('');
+  if(!rows)rows=`<tr class="emptyrow"><td class="gutter"></td><td colspan="${1+(named?1:0)+(s.quiz?1:0)+qs.length}">${escapeHTML(say('No responses yet.','មិនទាន់មានចម្លើយ។'))}</td></tr>`;
+  return `<div class="gsheet"><table><thead><tr>${heads}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function battleStatus(b){if(b.phase==='podium'||b.active===false)return say('Finished','បានបញ្ចប់');if(b.phase==='lobby')return say('Lobby','បន្ទប់រង់ចាំ');return say('In progress','កំពុងប្រកួត')}
+function battleModeName(mode){return mode==='accuracy'?say('Accuracy','គិតត្រឹមត្រូវ'):say('Speed battle','ប្រកួតល្បឿន')}
+async function loadSessions(){
+  try{
+    let [sessions,battles]=await Promise.all([api('/api/sessions'),api('/api/battles').catch(()=>[])]);
+    let rows=[...sessions.map(s=>({...s,sort:s.created||0})),...battles.map(b=>({...b,battle:true,sort:b.created||0}))].sort((a,b)=>(b.sort-a.sort)||String(b.code).localeCompare(String(a.code)));
+    let headers=lang==='km'?['កូដ','សំណួរ','ទម្រង់','ស្ថានភាព','ចម្លើយ','បានបើក']:['Code','Question','Form','Status','Responses','Opened'];
+    let html=table(headers,rows.map(s=>{
+      if(s.battle){
+        let desk=hostToken(s.code)?`<a href="/?hostbattle=${encodeURIComponent(s.code)}" onclick="event.stopPropagation()">${escapeHTML(say('Desk','ផ្ទាំង'))}</a>`:'';
+        let count=s.questions>1?`<br><span class="muted">${s.questions} ${say('questions','សំណួរ')}</span>`:'';
+        return `<tr class="clickrow" onclick="openBattleHistory('${escapeHTML(s.code)}')"><td>${escapeHTML(s.code)} ${desk}</td><td class="questioncell">${escapeHTML(s.title||s.code)}${count}</td><td>${escapeHTML(say('Quiz battle','ការប្រកួតសំណួរ')+' · '+battleModeName(s.mode))}</td><td>${escapeHTML(battleStatus(s))}</td><td>${s.players||0}</td><td>${escapeHTML(when(s.created))}</td></tr>`;
+      }
+      let desk=hostToken(s.code)?`<a href="/?host=${encodeURIComponent(s.code)}" onclick="event.stopPropagation()">${escapeHTML(say('Desk','ផ្ទាំង'))}</a>`:'';
+      return `<tr class="clickrow" onclick="openRecord('${escapeHTML(s.code)}')"><td>${escapeHTML(s.code)} ${desk}</td><td class="questioncell">${escapeHTML(s.question)}${(s.question_count||1)>1?`<br><span class="muted">${s.question_count} ${say('questions','សំណួរ')}</span>`:''}${s.locked?`<br><span class="muted">${escapeHTML(say('Locked','ចាក់សោ'))}</span>`:''}</td><td>${escapeHTML(kindName(sessionKind(s))+' · '+modeName(s.mode)+(s.quiz&&sessionKind(s)!=='test'?` · ${say('Scored','គិតពិន្ទុ')}`:''))}</td><td>${escapeHTML(statusName(s.active))}</td><td>${s.total} / ${s.capacity}</td><td>${escapeHTML(when(s.created))}</td></tr>`;
+    }).join(''));
+    if($('sessionTable').dataset.sig!==html){$('sessionTable').dataset.sig=html;$('sessionTable').innerHTML=html}
+  }catch(e){$('sessionTable').innerHTML=`<p class="error">${escapeHTML(e.message)}</p>`}
+}
+function paintRecord(s){
+  if(recordCode&&s.code!==recordCode)return;
+  if(s.locked&&s.revealed===false){
+    if(savedPass(s.code)&&$('responseTable').querySelector('table'))return;
+    showGate(s);
+    return;
+  }
+  if((s.total||0)<recordStamp)return;
+  recordStamp=s.total||0;
+  $('lockBox').classList.add('hidden');
+  $('sheetLink').classList.remove('hidden');
+  current=s;
+  let qs=questionsOf(s);
+  $('recordTitle').textContent=s.title||(qs.length===1?qs[0].text:s.question);
+  $('recordDesc').textContent=s.description||'';
+  $('recordDesc').classList.toggle('hidden',!s.description);
+  let pass=savedPass(s.code);
+  $('sheetLink').href='/api/sessions/'+encodeURIComponent(s.code)+'/sheet'+(pass?'?passcode='+encodeURIComponent(pass):'');
+  let labels=lang==='km'?['កូដ','សំណួរ','ទម្រង់','ស្ថានភាព','បានបើក','ចម្លើយ']:['Code','Questions','Form','Status','Opened','Responses'];
+  let values=[s.code,String(s.question_count||qs.length),kindName(sessionKind(s))+' · '+modeName(s.mode),statusName(s.active),when(s.created),s.total+' / '+s.capacity];
+  $('recordFacts').innerHTML=labels.map((label,i)=>`<div class="fact"><span>${escapeHTML(label)}</span><b>${escapeHTML(values[i])}</b></div>`).join('');
+  let count=s.total===1?say('1 response','ចម្លើយ ១'):say((s.total||0)+' responses',(s.total||0)+' ចម្លើយ');
+  $('sheetCount').innerHTML=escapeHTML(count)+liveMark();
+  $('recordSummary').innerHTML=`<h2 class="sheethead">${say('Summary','សង្ខេប')}</h2>`+scoreLine(s)+qs.map(q=>questionBlock(q,s.total,false)).join('');
+  $('responseTable').innerHTML=sheetBlock(s);
+  applySheetFilter();
+  showRecordPane(recordPane);
+  if(recordOpenN)showResponse(recordOpenN);
+}
+function battleSheetTable(s){
+  let heads=`<th class="gutter"></th><th class="when">${escapeHTML(say('Timestamp','ពេលវេលា'))}</th><th>${escapeHTML(say('Name','ឈ្មោះ'))}</th><th>${escapeHTML(say('Score','ពិន្ទុ'))}</th>`+s.questions.map((q,i)=>`<th><span class="qnum">${escapeHTML(say('Question ','សំណួរ '))}${i+1}</span><span class="qtitle">${escapeHTML(q.text)}</span></th>`).join('');
+  let rows=(s.responses||[]).map(r=>`<tr data-n="${r.number}"><td class="gutter">${r.number}</td><td class="when">${escapeHTML(when(r.created))}</td><td>${escapeHTML(r.name||'')}</td><td>${r.score??0}</td>`+s.questions.map((q,i)=>{let a=(r.answers||[])[i];return `<td>${a&&a.text?escapeHTML(a.text):''}</td>`}).join('')+`</tr>`).join('');
+  if(!rows)rows=`<tr class="emptyrow"><td class="gutter"></td><td colspan="${3+s.questions.length}">${escapeHTML(say('No responses yet.','មិនទាន់មានចម្លើយ។'))}</td></tr>`;
+  return `<div class="gsheet"><table><thead><tr>${heads}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function battleSummary(questions){
+  return `<h2 class="sheethead">${say('Summary','សង្ខេប')}</h2>`+(questions||[]).map(q=>`<section class="qblock"><h2 class="question">${escapeHTML(q.text)}</h2><p>${escapeHTML(say('Answer','ចម្លើយ'))}: ${escapeHTML(q.answer||'')}</p><p class="muted">${q.correct||0} / ${q.answered||0} ${escapeHTML(say('correct','ត្រឹមត្រូវ'))}</p>${q.feedback?`<p class="help">${escapeHTML(q.feedback)}</p>`:''}</section>`).join('');
+}
+function showBattleResponse(number){
+  let box=$('recordOne');
+  let r=(current?.responses||[]).find(x=>x.number===number);
+  document.querySelectorAll('#responseTable tbody tr').forEach(tr=>tr.classList.toggle('picked',Number(tr.dataset.n)===number&&!!r));
+  if(!r){recordOpenN=0;box.classList.add('hidden');box.innerHTML='';return}
+  recordOpenN=number;
+  let items=(current.questions||[]).map((q,i)=>{
+    let a=(r.answers||[])[i];
+    let text=a&&a.text?escapeHTML(a.text):escapeHTML(say('No answer','មិនមានចម្លើយ'));
+    let mark=a&&a.text?` · ${escapeHTML(a.correct?say('Correct','ត្រឹមត្រូវ'):say('Not correct','មិនត្រឹមត្រូវ'))} · ${a.points}`:'';
+    return `<div class="oneitem"><span>${escapeHTML(say('Question ','សំណួរ '))}${i+1}</span><b>${escapeHTML(q.text)}</b><p>${text}${mark}</p><p class="muted">${escapeHTML(say('Answer','ចម្លើយ'))}: ${escapeHTML(q.answer||'')}</p></div>`;
+  }).join('');
+  box.classList.remove('hidden');
+  box.innerHTML=`<div class="onehead"><b>${escapeHTML(r.name||say('Response ','ចម្លើយ ')+r.number)}</b><span class="muted">${escapeHTML(when(r.created))}</span><button type="button" class="secondary" id="closeOne">${escapeHTML(say('Close','បិទ'))}</button></div><p class="muted">${escapeHTML(say('Score','ពិន្ទុ'))} ${r.score??0}</p>${items}`;
+  $('closeOne').onclick=()=>showBattleResponse(0);
+}
+function paintBattleHistory(s){
+  recordIsBattle=true;
+  current={...s,battle:true};
+  recordCode=s.code;
+  $('lockBox').classList.add('hidden');
+  $('sheetLink').classList.remove('hidden');
+  $('sheetLink').href='/api/battles/'+encodeURIComponent(s.code)+'/sheet?token='+encodeURIComponent(hostToken(s.code));
+  $('recordTitle').textContent=s.title||s.code;
+  $('recordDesc').textContent=battleModeName(s.mode);
+  $('recordDesc').classList.remove('hidden');
+  $('sheetHint').textContent=say('Select a row to read that response.','ជ្រើសជួរដើម្បីអានចម្លើយនោះ។');
+  let labels=lang==='km'?['កូដ','សំណួរ','ទម្រង់','ស្ថានភាព','បានបើក','ចម្លើយ']:['Code','Questions','Form','Status','Opened','Responses'];
+  let values=[s.code,String((s.questions||[]).length),say('Quiz battle','ការប្រកួតសំណួរ')+' · '+battleModeName(s.mode),battleStatus(s),when(s.created),String(s.players||0)];
+  $('recordFacts').innerHTML=labels.map((label,i)=>`<div class="fact"><span>${escapeHTML(label)}</span><b>${escapeHTML(values[i])}</b></div>`).join('');
+  let count=(s.players||0)===1?say('1 response','ចម្លើយ ១'):say((s.players||0)+' responses',(s.players||0)+' ចម្លើយ');
+  $('sheetCount').textContent=count;
+  $('recordSummary').innerHTML=battleSummary(s.questions);
+  $('responseTable').innerHTML=battleSheetTable(s);
+  applySheetFilter();
+  showRecordPane(recordPane);
+  if(recordOpenN)showBattleResponse(recordOpenN);
+}
+function paintBattlePublic(s){
+  recordIsBattle=true;
+  current={...s,battle:true,questions:s.report||[],responses:(s.leaderboard||[]).map((p,i)=>({number:i+1,name:p.name,score:p.score,created:s.created,answers:[]}))};
+  recordCode=s.code;
+  $('lockBox').classList.add('hidden');
+  $('sheetLink').classList.add('hidden');
+  $('recordTitle').textContent=s.title||s.code;
+  $('recordDesc').textContent=battleModeName(s.mode);
+  $('recordDesc').classList.remove('hidden');
+  $('sheetHint').textContent=say('The full answer sheet stays in the browser that created this quiz.','សន្លឹកចម្លើយពេញលេញនៅកម្មវិធីរុករកដែលបានបង្កើតការប្រកួតនេះ។');
+  let labels=lang==='km'?['កូដ','សំណួរ','ទម្រង់','ស្ថានភាព','បានបើក','ចម្លើយ']:['Code','Questions','Form','Status','Opened','Responses'];
+  let values=[s.code,String(s.total||0),say('Quiz battle','ការប្រកួតសំណួរ')+' · '+battleModeName(s.mode),battleStatus(s),when(s.created),String(s.players||0)];
+  $('recordFacts').innerHTML=labels.map((label,i)=>`<div class="fact"><span>${escapeHTML(label)}</span><b>${escapeHTML(values[i])}</b></div>`).join('');
+  $('sheetCount').textContent=(s.players||0)===1?say('1 response','ចម្លើយ ១'):say((s.players||0)+' responses',(s.players||0)+' ចម្លើយ');
+  $('recordSummary').innerHTML=battleSummary((s.report||[]).map(q=>({text:q.text,answer:q.answer,feedback:q.feedback,correct:q.correct,answered:q.answered})));
+  $('responseTable').innerHTML=battleSheetTable(current);
+  applySheetFilter();
+  showRecordPane('summary');
+}
+async function loadBattleHistory(code){
+  let host=hostToken(code);
+  if(host){
+    try{paintBattleHistory(await api('/api/battles/'+encodeURIComponent(code)+'/history?token='+encodeURIComponent(host)));return}
+    catch(e){if(/not found/i.test(e.message)||/រកមិនឃើញ/.test(e.message))throw e}
+  }
+  paintBattlePublic(await api('/api/battles/'+encodeURIComponent(code)));
+}
+function ensureBattleWatch(){
+  if(listTimer||!current?.active||!current?.battle)return;
+  listTimer=setInterval(()=>{
+    if(view!=='record'||!recordIsBattle||!current?.active){clearInterval(listTimer);listTimer=null;return}
+    loadBattleHistory(recordCode);
+  },3000);
+}
+async function openBattleHistory(code){
+  if(!code)return;
+  code=String(code).toUpperCase();
+  recordCode=code;recordStamp=-1;recordPane='sheet';recordOpenN=0;recordIsBattle=true;
+  if($('sheetSearch'))$('sheetSearch').value='';
+  if(ws){ws.close();ws=null}
+  if(listTimer){clearInterval(listTimer);listTimer=null}
+  history.replaceState({},'','?responses='+encodeURIComponent(code));
+  show('record');
+  try{await loadBattleHistory(code);ensureBattleWatch()}
+  catch(e){$('responseTable').innerHTML=`<p class="error">${escapeHTML(e.message)}</p>`}
+}
+async function loadRecord(code){
+  let pass=savedPass(code);
+  try{paintRecord(await api('/api/sessions/'+encodeURIComponent(code)+'/responses'+(pass?'?passcode='+encodeURIComponent(pass):'')))}
+  catch(e){
+    if(/not found/i.test(e.message)||/រកមិនឃើញ/.test(e.message)){
+      try{await loadBattleHistory(code);ensureBattleWatch();return}catch(e2){}
+    }
+    if(!isLockError(e.message)){$('responseTable').innerHTML=`<p class="error">${escapeHTML(e.message)}</p>`;return}
+    if(e.message!=='Enter the response passcode')sessionStorage.removeItem('eduvoice_pass_'+code);
+    try{showGate(await api('/api/sessions/'+encodeURIComponent(code)),e.message==='Enter the response passcode'?'':lockText(e.message))}
+    catch{showGate({code},lockText(e.message))}
+  }
+}
+function openResponses(){if(ws){ws.close();ws=null}history.replaceState({},'','?responses');show('responses');loadSessions();if(listTimer)clearInterval(listTimer);listTimer=setInterval(()=>{if(view==='responses')loadSessions()},3000)}
+function openRecord(code){if(!code)return;code=String(code).toUpperCase();recordCode=code;recordStamp=-1;recordPane='sheet';recordOpenN=0;recordIsBattle=false;if($('sheetSearch'))$('sheetSearch').value='';history.replaceState({},'','?responses='+encodeURIComponent(code));show('record');loadRecord(code).then(()=>{if(!recordIsBattle)connect(code)})}
+function connect(code){if(view==='student'||view==='responses'||view==='welcome')return;if(ws){ws.onmessage=null;ws.onclose=null;ws.onopen=null;ws.close()}let proto=location.protocol==='https:'?'wss':'ws';ws=new WebSocket(proto+'://'+location.host+'/ws/'+code);ws.onopen=()=>{let pass=savedPass(code);if(pass&&ws.readyState===1)ws.send(JSON.stringify({passcode:pass}))};ws.onmessage=e=>{let s=JSON.parse(e.data);if(s.code&&s.code!==code)return;if(s.error){sessionStorage.removeItem('eduvoice_pass_'+code);if(view==='record')showGate(current||{code},lockText(s.error));else if(view==='lecturer'&&current)render({...current,responses:null,revealed:false,locked:true});return}if(view==='record')paintRecord(s);else render(s)};ws.onclose=()=>{if(current?.code===code&&(view==='lecturer'||view==='projection'||view==='record'))setTimeout(()=>connect(code),2500)}}
+function copyLink(){
+  let link=location.origin+'/?join='+current.code;
+  let note=lang==='km'?'បានចម្លងតំណ។':'Link copied.';
+  navigator.clipboard.writeText(link).then(()=>{$('copyState').textContent=note}).catch(()=>{$('copyState').textContent=link});
+}
+function exportCSV(){let pass=savedPass(current.code);if(current.locked&&!pass){$('copyState').textContent=say('Enter the passcode before downloading.','បញ្ចូលលេខសម្ងាត់មុនទាញយក។');return}location.href='/api/sessions/'+current.code+'/sheet'+(pass?'?passcode='+encodeURIComponent(pass):'')}
+async function closePoll(){
+  try{
+    if(current.active){if(!confirm(formText(sessionKind(current),'confirm')))return;await api('/api/sessions/'+current.code+'/close?token='+encodeURIComponent(token),{method:'POST'})}
+    else await api('/api/sessions/'+current.code+'/open?token='+encodeURIComponent(token),{method:'POST'});
+  }catch(e){$('copyState').textContent=e.message}
+}
+$('addQuestion').addEventListener('click',()=>{let card=addQuestionCard(blankQuestion(createKind));card.querySelector('.qtext').focus()});
+$('formTitle').addEventListener('input',preview);
+$('formDescription').addEventListener('input',preview);
+document.querySelectorAll('input[name="pollmode"]').forEach(r=>r.addEventListener('change',updateModeHelp));
+$('quizMode').addEventListener('change',()=>{refreshQuestions()});
+['responsePasscode','deskPass','lockCode'].forEach(id=>$(id).addEventListener('input',()=>{digitsOnly($(id));if(id==='responsePasscode')preview()}));
+$('recordTabSheet').addEventListener('click',()=>showRecordPane('sheet'));
+$('recordTabSummary').addEventListener('click',()=>showRecordPane('summary'));
+$('sheetSearch').addEventListener('input',applySheetFilter);
+$('responseTable').addEventListener('click',e=>{let tr=e.target.closest('tr');if(!tr||!tr.dataset.n)return;showResponse(Number(tr.dataset.n))});
+$('lockBtn').addEventListener('click',submitRecordPass);
+$('lockCode').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submitRecordPass()}});
+$('savePassBtn').addEventListener('click',()=>saveDeskPass(false));
+$('clearPassBtn').addEventListener('click',()=>saveDeskPass(true));
+async function submitRecordPass(){
+  let pin=$('lockCode').value.replace(/\D/g,'');
+  if(!/^\d{4}$/.test(pin)){$('lockError').textContent=lockText('Use a 4-digit passcode');return}
+  try{
+    let s=await api('/api/sessions/'+recordCode+'/responses?passcode='+encodeURIComponent(pin));
+    sessionStorage.setItem('eduvoice_pass_'+recordCode,pin);
+    $('lockCode').value='';
+    $('lockError').textContent='';
+    if(ws&&ws.readyState===1)ws.send(JSON.stringify({passcode:pin}));
+    paintRecord(s);
+  }catch(e){$('lockError').textContent=isLockError(e.message)?lockText(e.message):e.message}
+}
+$('createForm').addEventListener('submit',e=>{e.preventDefault();create()});
+$('createForm').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'||e.target.tagName==='TEXTAREA')return;
+  let row=e.target.closest('.choicerow');
+  if(!row)return;
+  e.preventDefault();
+  let inputs=[...row.parentElement.querySelectorAll('input:not(.qkey)')];
+  let i=inputs.indexOf(e.target);
+  if(i<inputs.length-1)inputs[i+1].focus();
+  else if(row.closest('.qstatements'))row.parentElement.parentElement.querySelector('.addstmt')?.click();
+  else row.parentElement.parentElement.querySelector('.addopt')?.click();
+});
+const BSHAPES=['▲','◆','●','■'];
+function battleId(){let id=localStorage.getItem('eduvoice_battle_id');if(!id){id=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random()).replace(/-/g,'');localStorage.setItem('eduvoice_battle_id',id)}return id}
+function battleMuteOn(){return localStorage.getItem('eduvoice_mute')==='yes'}
+function battleTone(kind){if(battleMuteOn())return;try{let ctx=battleTone.ctx||new AudioContext();battleTone.ctx=ctx;let o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.value=kind==='win'?523:349;g.gain.value=.045;o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+.16)}catch(e){}}
+function battleLabel(){let s=battleState;if(!s)return '';if(s.phase==='lobby')return say('Lobby','បន្ទប់រង់ចាំ');if(s.phase==='question')return say('Question ','សំណួរ ')+(s.index+1)+' / '+s.total;if(s.phase==='reveal')return say('Answer','ចម្លើយ');return say('Final ranking','ចំណាត់ថ្នាក់ចុងក្រោយ')}
+function battleRemain(){if(!battleState)return 0;if(battleState.phase!=='question'||battleState.paused)return battleState.remaining||0;return Math.max(0,Math.ceil((battleState.remaining*1000-(Date.now()-battleStamp))/1000))}
+function battleModeText(){let speed=document.querySelector('input[name="battleMode"]:checked')?.value!=='accuracy';return speed?say('A correct answer scores more when it is faster. The fastest answer scores 1,000 points.','ចម្លើយត្រឹមត្រូវ និងលឿន ទទួលពិន្ទុច្រើន។ ចម្លើយលឿនបំផុតបាន ១០០០ ពិន្ទុ។'):say('A correct answer scores 1,000 points. Speed does not change the score.','ចម្លើយត្រឹមត្រូវបាន ១០០០ ពិន្ទុ។ ល្បឿនមិនប្តូរពិន្ទុទេ។')}
+function battleRefreshForm(){
+  if(!$('battleModeHelp'))return;
+  $('battleModeHelp').textContent=battleModeText();
+  $('battleTitle').placeholder=say('Untitled battle','ការប្រកួតគ្មានចំណងជើង');
+  document.querySelectorAll('#battleMake .bchip').forEach(btn=>btn.setAttribute('aria-pressed',btn.dataset.sec===$('battleSeconds').value?'true':'false'));
+  let cards=[...document.querySelectorAll('#battleQuestions .qcard')];
+  if($('battleCount'))$('battleCount').textContent=cards.length===1?say('1 question','១ សំណួរ'):say(cards.length+' questions',cards.length+' សំណួរ');
+  cards.forEach((card,i)=>{
+    card.querySelector('.blabel').textContent=say('Question ','សំណួរ ')+(i+1);
+    card.querySelector('.bqtext').placeholder=say('Type the question','សរសេរសំណួរ');
+    card.querySelector('.bqhint').textContent=say('Tap a color to mark the correct answer, then type the choice.','ចុចពណ៌ដើម្បីសម្គាល់ចម្លើយត្រឹមត្រូវ រួចសរសេរជម្រើស។');
+    card.querySelector('.bfeedlabel').textContent=say('Explanation, shown after the answer','ការពន្យល់ បង្ហាញបន្ទាប់ពីចម្លើយ');
+    card.querySelector('.bqfeed').placeholder=say('Why this answer is right','ហេតុអ្វីចម្លើយនេះត្រឹមត្រូវ');
+    card.querySelector('.bqadd').textContent=say('Add a choice','បន្ថែមជម្រើស');
+    let remove=card.querySelector('.bqremove');
+    remove.textContent=say('Delete','លុប');
+    remove.disabled=cards.length<=1;
+    let rows=[...card.querySelectorAll('.choicerow')];
+    card.querySelector('.bqadd').disabled=rows.length>=4;
+    rows.forEach((row,n)=>{
+      row.classList.remove('b0','b1','b2','b3');
+      row.classList.add('b'+n);
+      row.querySelector('.bqshape').textContent=BSHAPES[n]||'';
+      row.querySelector('.bqopt').placeholder=say('Choice ','ជម្រើស ')+(n+1);
+      let drop=row.querySelector('.bqdrop');
+      drop.textContent='×';
+      drop.setAttribute('aria-label',say('Remove choice','ដកជម្រើស')+' '+(n+1));
+      drop.disabled=rows.length<=2;
+      row.querySelector('.bqkey').setAttribute('aria-label',say('Correct answer','ចម្លើយត្រឹមត្រូវ')+' '+(n+1));
+    });
+  });
+}
+function bindBattleRow(card,row){
+  row.addEventListener('click',e=>{if(e.target.closest('.bqdrop')||e.target.classList.contains('bqopt'))return;row.querySelector('.bqkey').checked=true});
+  row.querySelector('.bqdrop').addEventListener('click',()=>{if(card.querySelectorAll('.choicerow').length<=2)return;row.remove();if(!card.querySelector('.bqkey:checked'))card.querySelector('.bqkey').checked=true;battleRefreshForm()});
+}
+function addBattleQuestion(data){
+  let n=++battleQseq;
+  let card=document.createElement('article');
+  card.className='qcard bqcard';
+  card.innerHTML='<div class="bqhead"><b class="blabel"></b><button type="button" class="bqremove"></button></div><textarea class="bqtext" maxlength="300" rows="2"></textarea><p class="bqhint"></p><div class="bqopts"></div><button type="button" class="bqadd"></button><details class="bqexplain"><summary class="bfeedlabel"></summary><textarea class="bqfeed" maxlength="300" rows="2"></textarea></details>';
+  let opts=(data?.options&&data.options.length?data.options:['','']).slice(0,4);
+  while(opts.length<2)opts.push('');
+  opts.forEach((text,i)=>{
+    let row=document.createElement('div');
+    row.className='choicerow bqrow';
+    row.innerHTML='<input type="radio" class="bqkey"><span class="bqmark"><span class="bqshape" aria-hidden="true"></span><span class="bqtick" aria-hidden="true">✓</span></span><input maxlength="80" class="bqopt"><button type="button" class="bqdrop"></button>';
+    row.querySelector('.bqkey').name='bq'+n;
+    row.querySelector('.bqopt').value=text||'';
+    row.querySelector('.bqkey').checked=i===(Number.isInteger(data?.correct)?data.correct:0);
+    bindBattleRow(card,row);
+    card.querySelector('.bqopts').appendChild(row);
+  });
+  card.querySelector('.bqtext').value=data?.text||'';
+  card.querySelector('.bqfeed').value=data?.feedback||'';
+  if(data?.feedback)card.querySelector('.bqexplain').open=true;
+  card.querySelector('.bqadd').addEventListener('click',()=>{if(card.querySelectorAll('.choicerow').length>=4)return;let row=document.createElement('div');row.className='choicerow bqrow';row.innerHTML='<input type="radio" class="bqkey"><span class="bqmark"><span class="bqshape" aria-hidden="true"></span><span class="bqtick" aria-hidden="true">✓</span></span><input maxlength="80" class="bqopt"><button type="button" class="bqdrop"></button>';row.querySelector('.bqkey').name='bq'+n;bindBattleRow(card,row);card.querySelector('.bqopts').appendChild(row);battleRefreshForm();row.querySelector('.bqopt').focus()});
+  card.querySelector('.bqremove').addEventListener('click',()=>{if($('battleQuestions').children.length<=1)return;card.remove();battleRefreshForm()});
+  $('battleQuestions').appendChild(card);
+  battleRefreshForm();
+  return card;
+}
+function readBattleQuestions(){return [...$('battleQuestions').children].map(card=>{let rows=[...card.querySelectorAll('.choicerow')].filter(row=>row.querySelector('.bqopt').value.trim());let correct=rows.findIndex(row=>row.querySelector('.bqkey').checked);return {text:card.querySelector('.bqtext').value.trim(),options:rows.map(row=>row.querySelector('.bqopt').value.trim()),correct,feedback:card.querySelector('.bqfeed').value.trim()}})}
+function openBattle(){if(!$('battleQuestions').children.length)addBattleQuestion();battleRefreshForm();show('battleMake');window.scrollTo(0,0);$('battleTitle').focus()}
+function battleLeader(list,mine){if(!list?.length)return '';return `<div class="bleader">`+list.slice(0,8).map((p,i)=>`<div><span>${i+1}. ${escapeHTML(p.name)}${mine&&p.name===mine?' · '+escapeHTML(say('you','អ្នក')):''}</span><b>${p.score}</b></div>`).join('')+`</div>`}
+function battlePodium(list){let top=(list||[]).slice(0,3);if(!top.length)return '';let order=[1,0,2];return `<div class="podium">`+order.filter(i=>top[i]).map(i=>`<div class="pod p${i+1}"><span>${i+1}</span><b>${escapeHTML(top[i].name)}</b><span>${top[i].score}</span></div>`).join('')+`</div>`}
+function battleChoices(s,mine,locked){let q=s.question;if(!q)return '';let shapes=BSHAPES;return `<div class="bgrid">`+q.options.map((o,i)=>{let cls=`bchoice b${i}`;if(mine?.choice===i)cls+=' picked';if(s.phase==='reveal'&&q.correct===i)cls+=' right';else if(s.phase==='reveal'&&mine?.choice===i)cls+=' wrong';let count=s.phase==='reveal'&&s.counts?` <span>${s.counts[i]||0}</span>`:'';return `<button type="button" class="${cls}" ${locked?'disabled':''} onclick="battlePick(${i})"><span aria-hidden="true">${shapes[i]||''}</span><span>${escapeHTML(o)}${count}</span></button>`}).join('')+`</div>`}
+function battleReport(list){if(!list?.length)return '';return `<div class="breport">`+list.map(q=>`<p class="muted"><b>${escapeHTML(q.text)}</b><br>${escapeHTML(say('Answer','ចម្លើយ'))}: ${escapeHTML(q.answer||'')} · ${q.correct}/${q.answered} ${escapeHTML(say('correct','ត្រឹមត្រូវ'))}${q.feedback?`<br>${escapeHTML(q.feedback)}`:''}</p>`).join('')+`</div>`}
+function paintBattle(){if(!battleState)return;let s=battleState;if(s.phase!==battlePhase){if(s.phase==='reveal')battleTone('tick');if(s.phase==='podium')battleTone('win');battlePhase=s.phase}let left=battleRemain();if(view==='battleHost'){let phase=battleLabel();$('battleCode').textContent=s.code;if($('battlePin'))$('battlePin').textContent=s.code;$('battlePhase').textContent=phase;$('battleUrl').textContent=location.origin+'/?play='+s.code;$('battleQr').src='/api/battles/'+s.code+'/qr';$('battleQr').alt=say('QR code for students','កូដ QR សម្រាប់និស្សិត');$('battleStageLink').href='/?stage='+s.code;$('battleStart').disabled=s.phase!=='lobby';$('battleReveal').disabled=s.phase!=='question';$('battleNext').disabled=s.phase!=='reveal';$('battleEnd').disabled=s.phase==='podium';$('battlePause').disabled=s.phase!=='question';$('battlePause').textContent=s.paused?say('Resume','បន្ត'):t[lang].battlePause;$('battleMute').textContent=battleMuteOn()?say('Sound off','បិទសំឡេង'):t[lang].battleMute;let stats=`<div class="bstats"><div class="bstat"><span>${escapeHTML(say('Players','អ្នកលេង'))}</span><b>${s.players}</b></div><div class="bstat"><span>${escapeHTML(say('Answered','បានឆ្លើយ'))}</span><b>${s.answered||0}</b></div><div class="bstat"><span>${escapeHTML(say('Time','ពេល'))}</span><b class="btimer" data-timer>${left}</b></div></div>`;let body='';if(s.phase==='lobby')body=`<h2>${escapeHTML(s.title)}</h2><p class="help">${escapeHTML(s.names?.length?s.names.join(' · '):say('Waiting for players.','រង់ចាំអ្នកលេង។'))}</p>`;else if(s.question)body=`<h2 class="question">${escapeHTML(s.question.text)}</h2>`+battleChoices(s,null,true)+(s.question.feedback?`<p class="help">${escapeHTML(s.question.feedback)}</p>`:'')+battleLeader(s.leaderboard);else if(s.phase==='podium')body=`<h2>${escapeHTML(say('Final ranking','ចំណាត់ថ្នាក់ចុងក្រោយ'))}</h2>`+battlePodium(s.podium||s.leaderboard)+battleLeader(s.leaderboard)+battleReport(s.report);$('battleHostBody').innerHTML=stats+body}if(view==='battlePlay'){let joined=!!s.you;$('battleJoinBox').classList.toggle('hidden',joined);$('battlePlayBody').classList.toggle('hidden',!joined);if(!joined){$('battleJoinMeta').textContent=s.title||'';return}let locked=s.phase!=='question'||s.paused||s.you?.locked;let note='';if(s.phase==='lobby')note=say('Waiting for the teacher to start.','រង់ចាំគ្រូចាប់ផ្តើម។');else if(s.paused)note=say('The question is paused.','សំណួរត្រូវបានផ្អាក។');else if(s.you?.locked&&s.phase==='question')note=say('Answer locked.','បានចាក់សោចម្លើយ។');else if(s.phase==='reveal')note=(s.you?.correct?say('Correct','ត្រឹមត្រូវ'):s.you?.locked?say('Not correct','មិនត្រឹមត្រូវ'):say('Time is up','អស់ពេល'))+(s.you?.points?` · +${s.you.points}`:'');else if(s.phase==='podium')note=say('Your score ','ពិន្ទុរបស់អ្នក ')+(s.you?.score||0);let q=s.question?`<h2 class="question">${escapeHTML(s.question.text)}</h2>`+battleChoices(s,s.you,locked):battlePodium(s.podium||[])+(s.phase==='podium'?battleReport(s.report):'');if(s.phase==='reveal'&&s.question?.feedback)q+=`<p class="help">${escapeHTML(s.question.feedback)}</p>`;$('battlePlayBody').innerHTML=`<p class="muted">${escapeHTML(battleLabel())} · ${escapeHTML(s.you.name)}</p><p class="btimer" data-timer>${s.phase==='question'?left:''}</p>${q}<p class="help">${escapeHTML(note)}</p>`+battleLeader(s.leaderboard,s.you?.name)}if(view==='battleStage'){let pass=s.phase==='lobby'?`<div class="stagejoin"><img src="/api/battles/${encodeURIComponent(s.code)}/qr" alt=""><b>${escapeHTML(s.code)}</b></div>`:'';let title=s.phase==='lobby'?escapeHTML(s.title):s.question?escapeHTML(s.question.text):escapeHTML(say('Final ranking','ចំណាត់ថ្នាក់ចុងក្រោយ'));let main=s.phase==='podium'?battlePodium(s.podium||s.leaderboard)+battleLeader(s.leaderboard)+battleReport(s.report):s.phase==='lobby'?`<p>${escapeHTML((s.names||[]).join(' · ')||say('Waiting for players.','រង់ចាំអ្នកលេង។'))}</p>`:battleChoices(s,null,true)+battleLeader(s.leaderboard);$('battleStageBody').innerHTML=`<p class="muted">${escapeHTML(s.code)} · ${escapeHTML(battleLabel())}</p><h1 id="projectionQuestion">${title}</h1>${pass}<p class="btimer" data-timer>${s.phase==='question'?left:''}</p>${s.phase==='question'||s.phase==='reveal'?`<p>${escapeHTML(say('Answered ','បានឆ្លើយ '))}${s.answered||0} / ${s.players}</p>`:''}${main}`}}
+async function refreshBattle(){if(!battleCode)return;if(refreshBattle.busy){refreshBattle.again=true;return}refreshBattle.busy=true;try{do{refreshBattle.again=false;let code=battleCode,player=battlePlayer,v=view;let path='/api/battles/'+code;if(v==='battleHost')path+='/host?token='+encodeURIComponent(token);else if(player)path+='?player='+encodeURIComponent(player);let s=await api(path);if(code!==battleCode||v!==view||player!==battlePlayer){refreshBattle.again=true;continue}battleStamp=Date.now();battleState=s;paintBattle()}while(refreshBattle.again)}catch(e){if(view==='battleHost'&&$('battleHostNote'))$('battleHostNote').textContent=e.message;else if(view==='battlePlay'&&$('battleJoinError')&&!battleState?.you)$('battleJoinError').textContent=e.message}finally{refreshBattle.busy=false;if(refreshBattle.again)refreshBattle()}}
+function connectBattle(code){if(ws){ws.onmessage=null;ws.onclose=null;ws.close()}let proto=location.protocol==='https:'?'wss':'ws';ws=new WebSocket(proto+'://'+location.host+'/ws/battle/'+code);ws.onmessage=()=>refreshBattle();ws.onclose=()=>{if(battleCode===code&&(view==='battleHost'||view==='battlePlay'||view==='battleStage'))setTimeout(()=>connectBattle(code),2500)};if(battleTimer)clearInterval(battleTimer);battleTimer=setInterval(()=>{document.querySelectorAll('[data-timer]').forEach(el=>{if(battleState?.phase==='question')el.textContent=String(battleRemain())});if(battleState?.phase==='question'&&!battleState.paused&&battleRemain()===0)refreshBattle()},500)}
+async function openBattleHost(code){battleCode=code.toUpperCase();token=hostToken(code);if(!token)throw Error(say('The host screen stays in the browser that created the battle.','ផ្ទាំងគ្រូប្រើបានតែនៅកម្មវិធីរុករកដែលបានបង្កើតការប្រកួតប៉ុណ្ណោះ។'));show('battleHost');$('battleCode').textContent=battleCode;if($('battlePin'))$('battlePin').textContent=battleCode;$('battleUrl').textContent=location.origin+'/?play='+battleCode;$('battleQr').src='/api/battles/'+battleCode+'/qr';await refreshBattle();connectBattle(battleCode)}
+async function openBattlePlay(code){battleCode=code.toUpperCase();battlePlayer=localStorage.getItem('eduvoice_battle_player_'+battleCode)||'';show('battlePlay');$('battleJoinError').textContent='';if(battlePlayer){try{await refreshBattle();if(battleState?.you){$('battleNick').value=battleState.you.name;connectBattle(battleCode);return}}catch(e){battlePlayer=''}}await refreshBattle();connectBattle(battleCode)}
+async function openBattleStage(code){battleCode=code.toUpperCase();battlePlayer='';show('battleStage');await refreshBattle();connectBattle(battleCode)}
+async function battlePick(choice){if(!battleState||battleState.phase!=='question'||battleState.paused||battleState.you?.locked)return;try{battleState=await api('/api/battles/'+battleState.code+'/answer',{method:'POST',body:JSON.stringify({player:battlePlayer,choice})});battleStamp=Date.now();paintBattle()}catch(e){$('battlePlayBody').insertAdjacentHTML('beforeend',`<p class="error">${escapeHTML(e.message)}</p>`)}}
+async function battleControl(action){if(!battleState||!token)return;try{battleState=await api('/api/battles/'+battleState.code+'/control?token='+encodeURIComponent(token),{method:'POST',body:JSON.stringify({action:action==='resume'?'resume':action})});battleStamp=Date.now();paintBattle()}catch(e){$('battleHostNote').textContent=e.message}}
+function battleSheet(){if(!battleState||!token)return;location.href='/api/battles/'+battleState.code+'/sheet?token='+encodeURIComponent(token)}
+function markBattleError(message){$('battleError').textContent=message;if(message)$('battleError').scrollIntoView({block:'center'})}
+document.querySelectorAll('#battleMake .bchip').forEach(btn=>btn.addEventListener('click',()=>{$('battleSeconds').value=btn.dataset.sec;battleRefreshForm()}));
+document.querySelectorAll('input[name="battleMode"]').forEach(el=>el.addEventListener('change',battleRefreshForm));
+$('battleAdd').addEventListener('click',()=>{if($('battleQuestions').children.length>=30)return;addBattleQuestion()});
+$('battleForm').addEventListener('submit',async e=>{e.preventDefault();$('battleError').textContent='';let questions=readBattleQuestions();for(let q of questions){if(q.text.length<3){markBattleError(say('Write a question of at least 3 characters.','សរសេរសំណួរយ៉ាងតិច ៣ តួអក្សរ។'));return}if(q.options.length<2){markBattleError(say('Each question needs 2 to 4 choices.','សំណួរនីមួយៗត្រូវមានជម្រើស ២ ដល់ ៤។'));return}if(q.correct<0){markBattleError(say('Mark the correct answer.','សម្គាល់ចម្លើយត្រឹមត្រូវ។'));return}if(new Set(q.options.map(x=>x.toLowerCase())).size!==q.options.length){markBattleError(say('Choices in one question must differ.','ជម្រើសក្នុងសំណួរតែមួយត្រូវខុសគ្នា។'));return}}let btn=$('battleLaunch');btn.disabled=true;try{let mode=document.querySelector('input[name="battleMode"]:checked').value;let r=await api('/api/battles',{method:'POST',body:JSON.stringify({title:$('battleTitle').value.trim(),mode,seconds:Number($('battleSeconds').value),rankings:$('battleRankings').checked,questions})});rememberHost(r.code,r.token);token=r.token;history.replaceState({},'','?hostbattle='+r.code);await openBattleHost(r.code)}catch(err){markBattleError(err.message)}finally{btn.disabled=false}});
+$('battleStart').addEventListener('click',()=>battleControl('start'));
+$('battlePause').addEventListener('click',()=>battleControl(battleState?.paused?'resume':'pause'));
+$('battleReveal').addEventListener('click',()=>battleControl('reveal'));
+$('battleNext').addEventListener('click',()=>battleControl('next'));
+$('battleEnd').addEventListener('click',()=>battleControl('end'));
+$('battleExport').addEventListener('click',battleSheet);
+$('battleMute').addEventListener('click',()=>{localStorage.setItem('eduvoice_mute',battleMuteOn()?'no':'yes');paintBattle()});
+$('battleJoinBtn').addEventListener('click',async()=>{ $('battleJoinError').textContent='';try{let id=battleId();let s=await api('/api/battles/'+battleCode+'/join',{method:'POST',body:JSON.stringify({player:id,name:$('battleNick').value})});battlePlayer=id;localStorage.setItem('eduvoice_battle_player_'+battleCode,id);battleStamp=Date.now();battleState=s;paintBattle()}catch(e){$('battleJoinError').textContent=e.message}});
+async function boot(){
+  initQuestions();
+  translate();
+  document.body.dataset.view=view;
+  let p=new URLSearchParams(location.search);
+  if(p.has('responses')){let rc=p.get('responses');if(rc)openRecord(rc);else openResponses();return}
+  if(p.has('play')){openBattlePlay(p.get('play'));return}
+  if(p.has('stage')){openBattleStage(p.get('stage'));return}
+  if(p.has('hostbattle')){openBattleHost(p.get('hostbattle')).catch(e=>{show('welcome');alert(e.message)});return}
+  let code=p.get('join')||p.get('project')||p.get('host');
+  if(!code)return;
+  try{
+    current=await api('/api/sessions/'+code);
+    if(p.has('join'))show('student');
+    else if(p.has('project'))show('projection');
+    else{token=hostToken(code);if(!token)throw Error(lang==='km'?'ផ្ទាំងគ្រូប្រើបានតែនៅកម្មវិធីរុករកដែលបានបង្កើតទម្រង់ប៉ុណ្ណោះ។':'The lecturer desk stays in the browser that created the form');show('lecturer')}
+    render(current);
+    if(!p.has('join'))connect(code);
+  }catch(e){
+    if(p.has('join')){try{await api('/api/battles/'+code.toUpperCase());await openBattlePlay(code);return}catch(e2){}}
+    show('welcome');alert(e.message)
+  }
+}
+boot();
+</script>
+</body>
+</html>
